@@ -53,7 +53,7 @@ namespace MyORM.Core
         /// <param name="str">connection string</param>
         /// <param name="oldConnection">pass connection if exist</param>
         /// <param name="oldTransaction">pass transaction if exist</param>
-        public DbConnection(string connectionString = null)
+        public DbConnection(string connectionString)
         {
             _connectionString = connectionString;
             _connection = new SqlConnection(_connectionString);
@@ -119,57 +119,7 @@ namespace MyORM.Core
         /// <returns></returns>
         private object ExecuteProcedure(string procedureName, ExecuteType executeType, List<DbParameter> parameters)
         {
-            object returnObject = null;
-
-            if (_connection != null)
-            {
-                if (_connection.State == ConnectionState.Open)
-                {
-                    _command = new SqlCommand(procedureName, _connection)
-                    {
-                        CommandType = CommandType.StoredProcedure
-                    };
-
-                    if (_transaction != null)
-                    {
-                        _command.Transaction = _transaction;
-                    }
-
-                    // pass stored procedure parameters to command
-                    if (parameters != null)
-                    {
-                        _command.Parameters.Clear();
-
-                        foreach (DbParameter dbParameter in parameters)
-                        {
-                            SqlParameter parameter = new SqlParameter
-                            {
-                                ParameterName = "@" + dbParameter.Name,
-                                Direction = dbParameter.Direction,
-                                Value = dbParameter.Value
-                            };
-                            _command.Parameters.Add(parameter);
-                        }
-                    }
-
-                    switch (executeType)
-                    {
-                        case ExecuteType.ExecuteReader:
-                            returnObject = _command.ExecuteReader();
-                            break;
-                        case ExecuteType.ExecuteNonQuery:
-                            returnObject = _command.ExecuteNonQuery();
-                            break;
-                        case ExecuteType.ExecuteScalar:
-                            returnObject = _command.ExecuteScalar();
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            return returnObject;
+            return Execute(procedureName, executeType, parameters, CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -181,15 +131,28 @@ namespace MyORM.Core
         /// <returns></returns>
         private object ExecuteQuery(string text, ExecuteType executeType, List<DbParameter> parameters)
         {
+            return Execute(text, executeType, parameters, CommandType.Text);
+        }
+
+        /// <summary>
+        /// execute stored procedure or text
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="executeType"></param>
+        /// <param name="parameters"></param>
+        /// <param name="commandType"></param>
+        /// <returns></returns>
+        private object Execute(string commandText, ExecuteType executeType, List<DbParameter> parameters, CommandType commandType)
+        {
             object returnObject = null;
 
             if (_connection != null)
             {
                 if (_connection.State == ConnectionState.Open)
                 {
-                    _command = new SqlCommand(text, _connection)
+                    _command = new SqlCommand(commandText, _connection)
                     {
-                        CommandType = CommandType.Text
+                        CommandType = commandType
                     };
 
                     if (_transaction != null)
