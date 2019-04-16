@@ -233,9 +233,18 @@ namespace MyORM.Core
             {
                 if (disposing)
                 {
-                    _transaction.Dispose();
-                    _command.Dispose();
-                    _connection.Dispose();
+                    if(_transaction != null)
+                    {
+                        _transaction.Dispose();
+                    }
+                    if(_command != null)
+                    {
+                        _command.Dispose();
+                    }
+                    if(_connection != null)
+                    {
+                        _connection.Dispose();
+                    }                    
                 }
 
                 disposed = true;
@@ -259,10 +268,10 @@ namespace MyORM.Core
         {
             Open();
 
-            IDataReader reader = (IDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
+            SqlDataReader reader = (SqlDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
             T tempObject = new T();
 
-            if (reader.Read())
+            if (reader.HasRows && reader.Read())
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
@@ -293,23 +302,26 @@ namespace MyORM.Core
 
             Open();
 
-            IDataReader reader = (IDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
+            SqlDataReader reader = (SqlDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
 
-            while (reader.Read())
+            if (reader.HasRows)
             {
-                T tempObject = new T();
-
-                for (int i = 0; i < reader.FieldCount; i++)
+                while (reader.Read())
                 {
-                    if (reader.GetValue(i) != DBNull.Value)
-                    {
-                        PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
-                        propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
-                    }
-                }
+                    T tempObject = new T();
 
-                objects.Add(tempObject);
-            }
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        if (reader.GetValue(i) != DBNull.Value)
+                        {
+                            PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
+                            propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                        }
+                    }
+
+                    objects.Add(tempObject);
+                }
+            }            
 
             reader.Close();
 
@@ -376,10 +388,10 @@ namespace MyORM.Core
         {
             Open();
 
-            IDataReader reader = (IDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
+            SqlDataReader reader = (SqlDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
             T tempObject = new T();
 
-            if (reader.Read())
+            if (reader.HasRows && reader.Read())
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
@@ -410,22 +422,25 @@ namespace MyORM.Core
 
             Open();
 
-            IDataReader reader = (IDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
+            SqlDataReader reader = (SqlDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
 
-            while (reader.Read())
+            if (reader.HasRows)
             {
-                T tempObject = new T();
-
-                for (int i = 0; i < reader.FieldCount; i++)
+                while (reader.Read())
                 {
-                    if (reader.GetValue(i) != DBNull.Value)
-                    {
-                        PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
-                        propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
-                    }
-                }
+                    T tempObject = new T();
 
-                objects.Add(tempObject);
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        if (reader.GetValue(i) != DBNull.Value)
+                        {
+                            PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
+                            propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                        }
+                    }
+
+                    objects.Add(tempObject);
+                }
             }
 
             reader.Close();
