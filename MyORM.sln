@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyORM.Core", "MyORM.Core\MyORM.Core.csproj", "{5D25D3AF-8F7B-4F78-9C2F-34DA07B463BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyORM.Test", "MyORM.Test\MyORM.Test.csproj", "{3D0B0565-37B8-4F48-96B5-A5850F2C9185}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5D25D3AF-8F7B-4F78-9C2F-34DA07B463BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D25D3AF-8F7B-4F78-9C2F-34DA07B463BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D25D3AF-8F7B-4F78-9C2F-34DA07B463BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D0B0565-37B8-4F48-96B5-A5850F2C9185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D0B0565-37B8-4F48-96B5-A5850F2C9185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D0B0565-37B8-4F48-96B5-A5850F2C9185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D0B0565-37B8-4F48-96B5-A5850F2C9185}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

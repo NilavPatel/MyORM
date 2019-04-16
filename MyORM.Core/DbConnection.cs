@@ -36,7 +36,7 @@ namespace MyORM.Core
         /// <summary>
         /// output parameters
         /// </summary>
-        public List<DbParameter> _outParameters { get; private set; }
+        private List<DbParameter> _outParameters { get; set; }
 
         /// <summary>
         /// is object disposed ?
@@ -160,7 +160,7 @@ namespace MyORM.Core
                         _command.Transaction = _transaction;
                     }
 
-                    // pass stored procedure parameters to command
+                    // pass parameters to command
                     if (parameters != null)
                     {
                         _command.Parameters.Clear();
@@ -249,24 +249,13 @@ namespace MyORM.Core
         #region stored procedure methods
 
         /// <summary>
-        /// executes scalar query stored procedure without parameters
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="procedureName"></param>
-        /// <returns></returns>
-        public T ExecuteSingleProc<T>(string procedureName) where T : new()
-        {
-            return ExecuteSingleProc<T>(procedureName, null);
-        }
-
-        /// <summary>
         /// executes scalar query stored procedure and maps result to single object
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public T ExecuteSingleProc<T>(string procedureName, List<DbParameter> parameters) where T : new()
+        public T ExecuteSingleProc<T>(string procedureName, List<DbParameter> parameters = null) where T : new()
         {
             Open();
 
@@ -292,24 +281,13 @@ namespace MyORM.Core
         }
 
         /// <summary>
-        /// executes list query stored procedure without parameters (Select)
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="procedureName"></param>
-        /// <returns></returns>
-        public List<T> ExecuteListProc<T>(string procedureName) where T : new()
-        {
-            return ExecuteListProc<T>(procedureName, null);
-        }
-
-        /// <summary>
         /// executes list query stored procedure and maps result generic list of objects (Select with parameters)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<T> ExecuteListProc<T>(string procedureName, List<DbParameter> parameters) where T : new()
+        public List<T> ExecuteListProc<T>(string procedureName, List<DbParameter> parameters = null) where T : new()
         {
             List<T> objects = new List<T>();
 
@@ -364,21 +342,11 @@ namespace MyORM.Core
         }
 
         /// <summary>
-        /// executes scalar query stored procedure without parameters (Count(), Sum(), Min(), Max() etc...)
-        /// </summary>
-        /// <param name="procedureName"></param>
-        /// <returns></returns>
-        public object ExecuteScalarProc(string procedureName)
-        {
-            return ExecuteScalarProc(procedureName, null);
-        }
-
-        /// <summary>
         /// executes scalar query stored procedure with parameters (Count(), Sum(), Min(), Max() etc...)
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalarProc(string procedureName, List<DbParameter> parameters)
+        public object ExecuteScalarProc(string procedureName, List<DbParameter> parameters = null)
         {
             object returnValue;
 
@@ -398,24 +366,13 @@ namespace MyORM.Core
         #region query methods
 
         /// <summary>
-        /// executes scalar query stored procedure without parameters
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="procedureName"></param>
-        /// <returns></returns>
-        public T ExecuteSingle<T>(string text) where T : new()
-        {
-            return ExecuteSingle<T>(text, null);
-        }
-
-        /// <summary>
         /// executes scalar query stored procedure and maps result to single object
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public T ExecuteSingle<T>(string text, List<DbParameter> parameters) where T : new()
+        public T ExecuteSingle<T>(string text, List<DbParameter> parameters = null) where T : new()
         {
             Open();
 
@@ -441,24 +398,13 @@ namespace MyORM.Core
         }
 
         /// <summary>
-        /// executes list query stored procedure without parameters (Select)
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="procedureName"></param>
-        /// <returns></returns>
-        public List<T> ExecuteList<T>(string text) where T : new()
-        {
-            return ExecuteList<T>(text, null);
-        }
-
-        /// <summary>
         /// executes list query stored procedure and maps result generic list of objects (Select with parameters)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<T> ExecuteList<T>(string text, List<DbParameter> parameters) where T : new()
+        public List<T> ExecuteList<T>(string text, List<DbParameter> parameters = null) where T : new()
         {
             List<T> objects = new List<T>();
 
@@ -513,21 +459,11 @@ namespace MyORM.Core
         }
 
         /// <summary>
-        /// executes scalar query stored procedure without parameters (Count(), Sum(), Min(), Max() etc...)
-        /// </summary>
-        /// <param name="procedureName"></param>
-        /// <returns></returns>
-        public object ExecuteScalar(string text)
-        {
-            return ExecuteScalar(text, null);
-        }
-
-        /// <summary>
         /// executes scalar query stored procedure with parameters (Count(), Sum(), Min(), Max() etc...)
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalar(string text, List<DbParameter> parameters)
+        public object ExecuteScalar(string text, List<DbParameter> parameters = null)
         {
             object returnValue;
 
@@ -608,6 +544,15 @@ namespace MyORM.Core
         {
             return _transaction;
         }
+
+        /// <summary>
+        /// get output parameters
+        /// </summary>
+        /// <returns></returns>
+        public List<DbParameter> GetOutParameters()
+        {
+            return _outParameters;
+        }
         #endregion
 
         #region dispose method
@@ -634,22 +579,5 @@ namespace MyORM.Core
         ExecuteReader,
         ExecuteNonQuery,
         ExecuteScalar
-    }
-
-    /// <summary>
-    /// Db parameter class
-    /// </summary>
-    public class DbParameter
-    {
-        public string Name { get; set; }
-        public ParameterDirection Direction { get; set; }
-        public object Value { get; set; }
-
-        public DbParameter(string paramName, ParameterDirection paramDirection, object paramValue)
-        {
-            Name = paramName;
-            Direction = paramDirection;
-            Value = paramValue;
-        }
     }
 }
