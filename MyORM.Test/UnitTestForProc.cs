@@ -47,5 +47,16 @@ namespace MyORM.Test
                 Assert.IsTrue(customers.Count > 0);
             }
         }
+
+        [TestMethod]
+        public void GetCustomerCount_ExecuteScalarProc_ReturnTotalCustomerCount()
+        {
+            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+            using (var dbConnection = new SqlDbConnection(connectionString))
+            {
+                var count = dbConnection.ExecuteScalarProc("sp_GetCustomerCount");
+                Assert.IsTrue((int)count > 0);
+            }
+        }
     }
 }

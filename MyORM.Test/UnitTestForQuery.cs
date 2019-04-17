@@ -2,6 +2,7 @@
 using MyORM.Core;
 using MyORM.Test.Models;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace MyORM.Test
 {
@@ -15,8 +16,14 @@ namespace MyORM.Test
             using (var dbConnection = new SqlDbConnection(connectionString))
             {
                 var sqlConnection = dbConnection.GetSqlConnection();
-                Assert.AreEqual(sqlConnection.GetType().ToString(), "System.Data.SqlClient.SqlConnection");
+                Assert.IsInstanceOfType(sqlConnection, typeof(SqlConnection));
                 Assert.IsTrue(sqlConnection.ConnectionString.Length > 0);
+
+                sqlConnection.Open();
+                Assert.AreEqual(sqlConnection.State, System.Data.ConnectionState.Open);
+
+                sqlConnection.Close();
+                Assert.AreEqual(sqlConnection.State, System.Data.ConnectionState.Closed);
             }
         }
 
@@ -56,7 +63,6 @@ namespace MyORM.Test
                 var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
                 Assert.IsTrue((int)count > 0);
             }
-
         }
 
         [TestMethod]

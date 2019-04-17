@@ -53,6 +53,7 @@
     <Compile Include="UnitTestForProc.cs" />
     <Compile Include="UnitTestForQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitTestForTransaction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -62,6 +63,9 @@
       <Project>{5D25D3AF-8F7B-4F78-9C2F-34DA07B463BA}</Project>
       <Name>MyORM.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DataBase\DbScript.sql" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

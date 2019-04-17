@@ -59,24 +59,6 @@ namespace MyORM.Core
             _connection = new SqlConnection(_connectionString);
         }
 
-        /// <summary>
-        /// get database connection object from old SqlConnection object
-        /// </summary>
-        /// <param name="oldConnection"></param>
-        /// <param name="oldTransaction"></param>
-        public SqlDbConnection(SqlConnection oldConnection, SqlTransaction oldTransaction = null)
-        {
-
-            _connectionString = oldConnection.ConnectionString;
-            _connection = oldConnection;
-
-            //assign transaction if exist
-            if (oldTransaction != null)
-            {
-                _transaction = oldTransaction;
-            }
-        }
-
         #endregion
 
         #region private methods
@@ -104,7 +86,7 @@ namespace MyORM.Core
         /// </summary>
         private void Close()
         {
-            if (_connection != null)
+            if (_connection != null && _transaction == null)
             {
                 _connection.Close();
             }
@@ -243,6 +225,7 @@ namespace MyORM.Core
                     }
                     if(_connection != null)
                     {
+                        _connection.Close();
                         _connection.Dispose();
                     }                    
                 }
@@ -520,6 +503,7 @@ namespace MyORM.Core
         {
             if (_connection != null)
             {
+                _connection.Open();
                 _transaction = _connection.BeginTransaction();
             }
         }
@@ -529,9 +513,11 @@ namespace MyORM.Core
         /// </summary>
         public void CommitTransaction()
         {
-            if (_transaction != null)
+            if (_connection != null && _transaction != null)
             {
                 _transaction.Commit();
+                _transaction = null;
+                _connection.Close();
             }
         }
 
@@ -540,9 +526,11 @@ namespace MyORM.Core
         /// </summary>
         public void RollbackTransaction()
         {
-            if (_transaction != null)
+            if (_connection != null && _transaction != null)
             {
                 _transaction.Rollback();
+                _transaction = null;
+                _connection.Close();
             }
         }
 
