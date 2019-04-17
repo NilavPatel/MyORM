@@ -556,15 +556,6 @@ namespace MyORM.Core
         }
 
         /// <summary>
-        /// get Sql Transaction
-        /// </summary>
-        /// <returns></returns>
-        public SqlTransaction GetSqlTransaction()
-        {
-            return _transaction;
-        }
-
-        /// <summary>
         /// get output parameters
         /// </summary>
         /// <returns></returns>
