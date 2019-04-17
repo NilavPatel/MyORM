@@ -9,7 +9,7 @@ namespace MyORM.Core
     /// <summary>
     /// SQL generic connection class
     /// </summary>
-    public class DbConnection : IDisposable
+    public class SqlDbConnection : IDisposable
     {
         #region private variables
 
@@ -53,7 +53,7 @@ namespace MyORM.Core
         /// <param name="str">connection string</param>
         /// <param name="oldConnection">pass connection if exist</param>
         /// <param name="oldTransaction">pass transaction if exist</param>
-        public DbConnection(string connectionString)
+        public SqlDbConnection(string connectionString)
         {
             _connectionString = connectionString;
             _connection = new SqlConnection(_connectionString);
@@ -64,7 +64,7 @@ namespace MyORM.Core
         /// </summary>
         /// <param name="oldConnection"></param>
         /// <param name="oldTransaction"></param>
-        public DbConnection(SqlConnection oldConnection, SqlTransaction oldTransaction = null)
+        public SqlDbConnection(SqlConnection oldConnection, SqlTransaction oldTransaction = null)
         {
 
             _connectionString = oldConnection.ConnectionString;
@@ -279,6 +279,10 @@ namespace MyORM.Core
                     propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
                 }
             }
+            else
+            {
+                tempObject = default(T);
+            }
 
             reader.Close();
 
@@ -321,7 +325,11 @@ namespace MyORM.Core
 
                     objects.Add(tempObject);
                 }
-            }            
+            }
+            else
+            {
+                objects = default(List<T>);
+            }
 
             reader.Close();
 
@@ -399,6 +407,10 @@ namespace MyORM.Core
                     propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
                 }
             }
+            else
+            {
+                tempObject = default(T);
+            }
 
             reader.Close();
 
@@ -441,6 +453,10 @@ namespace MyORM.Core
 
                     objects.Add(tempObject);
                 }
+            }
+            else
+            {
+                objects = default(List<T>);
             }
 
             reader.Close();
