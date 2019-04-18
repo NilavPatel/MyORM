@@ -8,7 +8,9 @@ namespace MyORM.Core
     public class SqlDbParameter
     {
         public string Name { get; set; }
+
         public ParameterDirection Direction { get; set; }
+
         public object Value { get; set; }
 
         public SqlDbParameter(string paramName, ParameterDirection paramDirection, object paramValue)

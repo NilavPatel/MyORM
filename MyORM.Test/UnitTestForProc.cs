@@ -12,7 +12,7 @@ namespace MyORM.Test
         public void InsertCustomer_ExecuteProc_InsertNewCustomer()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
                 {
@@ -39,7 +39,7 @@ namespace MyORM.Test
         public void GetAllCustomer_ExecuteProc_ReturnsAllCustomer()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customers = dbConnection.ExecuteListProc<Customer>("sp_GetAllCustomers");
                 Assert.IsInstanceOfType(customers, typeof(List<Customer>));
@@ -52,7 +52,7 @@ namespace MyORM.Test
         public void GetCustomerCount_ExecuteScalarProc_ReturnTotalCustomerCount()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var count = dbConnection.ExecuteScalarProc("sp_GetCustomerCount");
                 Assert.IsTrue((int)count > 0);

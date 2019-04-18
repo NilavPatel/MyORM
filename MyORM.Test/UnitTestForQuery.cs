@@ -13,7 +13,7 @@ namespace MyORM.Test
         public void CreateNewDbConnection_WithConnectionString_ReturnsConnection()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var sqlConnection = dbConnection.GetSqlConnection();
                 Assert.IsInstanceOfType(sqlConnection, typeof(SqlConnection));
@@ -31,7 +31,7 @@ namespace MyORM.Test
         public void InsertCustomer_ExecuteNoneQuery_InsertCustomerInDatabase()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
                 {
@@ -58,7 +58,7 @@ namespace MyORM.Test
         public void GetCustomerCount_ExecuteScalar_ReturnTotalCustomerCount()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
                 Assert.IsTrue((int)count > 0);
@@ -69,7 +69,7 @@ namespace MyORM.Test
         public void CheckConnectionIsCloseAfterExecute_ExecuteScalar_ConnectionStateIsClosed()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
                 var sqlConnection = dbConnection.GetSqlConnection();
@@ -81,7 +81,7 @@ namespace MyORM.Test
         public void GetCustomerCountByName_ExecuteScalarWithParameters_ReturnTotalCustomerCount()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
                 {
@@ -97,7 +97,7 @@ namespace MyORM.Test
         public void GetAllCustomer_ExecuteList_ReturnsCustomerList()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customers = dbConnection.ExecuteList<Customer>("Select * From Customer");
                 Assert.IsNotNull(customers);
@@ -108,7 +108,7 @@ namespace MyORM.Test
         public void GetCustomer_ExecuteSingle_ReturnsSingleCustomer()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customer = dbConnection.ExecuteSingle<Customer>("Select Top 1 * From Customer");
                 Assert.IsNotNull(customer);
@@ -119,7 +119,7 @@ namespace MyORM.Test
         public void UpdateCustomer_ExecuteNoneQuery_UpdateCustomerInDatabase()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customer = dbConnection.ExecuteSingle<Customer>("Select Top 1 * From Customer");
                 var parameters = new List<SqlDbParameter>
@@ -139,7 +139,7 @@ namespace MyORM.Test
         public void DeleteCustomer_ExecuteNoneQuery_DeleteCustomerInDatabase()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
                 {

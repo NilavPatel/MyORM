@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.Common;
 
 namespace MyORM.Core
 {
@@ -14,24 +15,19 @@ namespace MyORM.Core
         #region private variables
 
         /// <summary>
-        /// Connection string to connect with database
-        /// </summary>
-        private static string _connectionString { get; set; }
-
-        /// <summary>
         /// SQL connection
         /// </summary>
-        private SqlConnection _connection { get; set; }
+        private DbConnection _connection { get; set; }
 
         /// <summary>
         /// SQL command
         /// </summary>
-        private SqlCommand _command { get; set; }
+        private DbCommand _command { get; set; }
 
         /// <summary>
         /// SQL transaction
         /// </summary>
-        private SqlTransaction _transaction { get; set; }
+        private DbTransaction _transaction { get; set; }
 
         /// <summary>
         /// output parameters
@@ -53,10 +49,10 @@ namespace MyORM.Core
         /// <param name="str">connection string</param>
         /// <param name="oldConnection">pass connection if exist</param>
         /// <param name="oldTransaction">pass transaction if exist</param>
-        public SqlDbConnection(string connectionString)
+        internal SqlDbConnection(string connectionString)
         {
-            _connectionString = connectionString;
-            _connection = new SqlConnection(_connectionString);
+            _connection = SqlClientFactory.Instance.CreateConnection();
+            _connection.ConnectionString = connectionString;
         }
 
         #endregion
@@ -132,10 +128,11 @@ namespace MyORM.Core
             {
                 if (_connection.State == ConnectionState.Open)
                 {
-                    _command = new SqlCommand(commandText, _connection)
-                    {
-                        CommandType = commandType
-                    };
+                    _command = _connection.CreateCommand();
+                    _command.CommandText = commandText;
+                    _command.CommandType = commandType;
+                    // 60 * 2 seconds
+                    _command.CommandTimeout = 120;
 
                     if (_transaction != null)
                     {
@@ -149,12 +146,10 @@ namespace MyORM.Core
 
                         foreach (SqlDbParameter dbParameter in parameters)
                         {
-                            SqlParameter parameter = new SqlParameter
-                            {
-                                ParameterName = "@" + dbParameter.Name,
-                                Direction = dbParameter.Direction,
-                                Value = dbParameter.Value
-                            };
+                            DbParameter parameter = _command.CreateParameter();
+                            parameter.ParameterName = "@" + dbParameter.Name;
+                            parameter.Direction = dbParameter.Direction;
+                            parameter.Value = dbParameter.Value;
                             _command.Parameters.Add(parameter);
                         }
                     }
@@ -215,19 +210,19 @@ namespace MyORM.Core
             {
                 if (disposing)
                 {
-                    if(_transaction != null)
+                    if (_transaction != null)
                     {
                         _transaction.Dispose();
                     }
-                    if(_command != null)
+                    if (_command != null)
                     {
                         _command.Dispose();
                     }
-                    if(_connection != null)
+                    if (_connection != null)
                     {
                         _connection.Close();
                         _connection.Dispose();
-                    }                    
+                    }
                 }
 
                 disposed = true;
@@ -251,7 +246,7 @@ namespace MyORM.Core
         {
             Open();
 
-            SqlDataReader reader = (SqlDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
+            DbDataReader reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
             T tempObject = new T();
 
             if (reader.HasRows && reader.Read())
@@ -289,7 +284,7 @@ namespace MyORM.Core
 
             Open();
 
-            SqlDataReader reader = (SqlDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
+            DbDataReader reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
 
             if (reader.HasRows)
             {
@@ -379,7 +374,7 @@ namespace MyORM.Core
         {
             Open();
 
-            SqlDataReader reader = (SqlDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
+            DbDataReader reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
             T tempObject = new T();
 
             if (reader.HasRows && reader.Read())
@@ -417,7 +412,7 @@ namespace MyORM.Core
 
             Open();
 
-            SqlDataReader reader = (SqlDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
+            DbDataReader reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
 
             if (reader.HasRows)
             {
@@ -543,14 +538,14 @@ namespace MyORM.Core
         /// <returns></returns>
         public string GetConnectionString()
         {
-            return _connectionString;
+            return _connection.ConnectionString;
         }
 
         /// <summary>
-        /// get Sql connection object
+        /// get Db connection object
         /// </summary>
         /// <returns></returns>
-        public SqlConnection GetSqlConnection()
+        public DbConnection GetSqlConnection()
         {
             return _connection;
         }

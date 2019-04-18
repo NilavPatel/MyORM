@@ -12,7 +12,7 @@ namespace MyORM.Test
         public void SetTransaction_WithCommitTransaction_SaveData()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 dbConnection.BeginTransaction();
 
@@ -49,7 +49,7 @@ namespace MyORM.Test
         public void SetTransaction_WithRollbackTransaction_SaveData()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
-            using (var dbConnection = new SqlDbConnection(connectionString))
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 dbConnection.BeginTransaction();
 
