@@ -14,10 +14,10 @@ namespace MyORM.Test
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = new SqlDbConnection(connectionString))
             {
-                var parameters = new List<DbParameter>
+                var parameters = new List<SqlDbParameter>
                 {
-                    new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
-                    new DbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
+                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
                 dbConnection.ExecuteNonQueryProc("sp_InsertCustomer", parameters);
                 var outParameters = dbConnection.GetOutParameters();

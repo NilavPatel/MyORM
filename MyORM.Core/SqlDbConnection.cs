@@ -36,7 +36,7 @@ namespace MyORM.Core
         /// <summary>
         /// output parameters
         /// </summary>
-        private List<DbParameter> _outParameters { get; set; }
+        private List<SqlDbParameter> _outParameters { get; set; }
 
         /// <summary>
         /// is object disposed ?
@@ -99,7 +99,7 @@ namespace MyORM.Core
         /// <param name="executeType"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private object ExecuteProcedure(string procedureName, ExecuteType executeType, List<DbParameter> parameters)
+        private object ExecuteProcedure(string procedureName, ExecuteType executeType, List<SqlDbParameter> parameters)
         {
             return Execute(procedureName, executeType, parameters, CommandType.StoredProcedure);
         }
@@ -111,7 +111,7 @@ namespace MyORM.Core
         /// <param name="executeType"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private object ExecuteQuery(string text, ExecuteType executeType, List<DbParameter> parameters)
+        private object ExecuteQuery(string text, ExecuteType executeType, List<SqlDbParameter> parameters)
         {
             return Execute(text, executeType, parameters, CommandType.Text);
         }
@@ -124,7 +124,7 @@ namespace MyORM.Core
         /// <param name="parameters"></param>
         /// <param name="commandType"></param>
         /// <returns></returns>
-        private object Execute(string commandText, ExecuteType executeType, List<DbParameter> parameters, CommandType commandType)
+        private object Execute(string commandText, ExecuteType executeType, List<SqlDbParameter> parameters, CommandType commandType)
         {
             object returnObject = null;
 
@@ -147,7 +147,7 @@ namespace MyORM.Core
                     {
                         _command.Parameters.Clear();
 
-                        foreach (DbParameter dbParameter in parameters)
+                        foreach (SqlDbParameter dbParameter in parameters)
                         {
                             SqlParameter parameter = new SqlParameter
                             {
@@ -186,14 +186,14 @@ namespace MyORM.Core
         {
             if (_command.Parameters.Count > 0)
             {
-                _outParameters = new List<DbParameter>();
+                _outParameters = new List<SqlDbParameter>();
                 _outParameters.Clear();
 
                 for (int i = 0; i < _command.Parameters.Count; i++)
                 {
                     if (_command.Parameters[i].Direction == ParameterDirection.Output)
                     {
-                        _outParameters.Add(new DbParameter(_command.Parameters[i].ParameterName,
+                        _outParameters.Add(new SqlDbParameter(_command.Parameters[i].ParameterName,
                                                           ParameterDirection.Output,
                                                           _command.Parameters[i].Value));
                     }
@@ -247,7 +247,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public T ExecuteSingleProc<T>(string procedureName, List<DbParameter> parameters = null) where T : new()
+        public T ExecuteSingleProc<T>(string procedureName, List<SqlDbParameter> parameters = null) where T : new()
         {
             Open();
 
@@ -283,7 +283,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<T> ExecuteListProc<T>(string procedureName, List<DbParameter> parameters = null) where T : new()
+        public List<T> ExecuteListProc<T>(string procedureName, List<SqlDbParameter> parameters = null) where T : new()
         {
             List<T> objects = new List<T>();
 
@@ -329,7 +329,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public int ExecuteNonQueryProc(string procedureName, List<DbParameter> parameters)
+        public int ExecuteNonQueryProc(string procedureName, List<SqlDbParameter> parameters)
         {
             int returnValue;
 
@@ -349,7 +349,7 @@ namespace MyORM.Core
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalarProc(string procedureName, List<DbParameter> parameters = null)
+        public object ExecuteScalarProc(string procedureName, List<SqlDbParameter> parameters = null)
         {
             object returnValue;
 
@@ -375,7 +375,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public T ExecuteSingle<T>(string text, List<DbParameter> parameters = null) where T : new()
+        public T ExecuteSingle<T>(string text, List<SqlDbParameter> parameters = null) where T : new()
         {
             Open();
 
@@ -411,7 +411,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<T> ExecuteList<T>(string text, List<DbParameter> parameters = null) where T : new()
+        public List<T> ExecuteList<T>(string text, List<SqlDbParameter> parameters = null) where T : new()
         {
             List<T> objects = new List<T>();
 
@@ -457,7 +457,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public int ExecuteNonQuery(string text, List<DbParameter> parameters)
+        public int ExecuteNonQuery(string text, List<SqlDbParameter> parameters)
         {
             int returnValue;
 
@@ -477,7 +477,7 @@ namespace MyORM.Core
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalar(string text, List<DbParameter> parameters = null)
+        public object ExecuteScalar(string text, List<SqlDbParameter> parameters = null)
         {
             object returnValue;
 
@@ -559,7 +559,7 @@ namespace MyORM.Core
         /// get output parameters
         /// </summary>
         /// <returns></returns>
-        public List<DbParameter> GetOutParameters()
+        public List<SqlDbParameter> GetOutParameters()
         {
             return _outParameters;
         }

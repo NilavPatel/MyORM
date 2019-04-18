@@ -33,10 +33,10 @@ namespace MyORM.Test
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = new SqlDbConnection(connectionString))
             {
-                var parameters = new List<DbParameter>
+                var parameters = new List<SqlDbParameter>
                 {
-                    new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
-                    new DbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
+                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
                 dbConnection.ExecuteNonQuery("insert into customer(customerName) values(@CustomerName) SET @Identity = SCOPE_IDENTITY()", parameters);
                 var outParameters = dbConnection.GetOutParameters();
@@ -83,9 +83,9 @@ namespace MyORM.Test
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = new SqlDbConnection(connectionString))
             {
-                var parameters = new List<DbParameter>
+                var parameters = new List<SqlDbParameter>
                 {
-                    new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "%Nilav%")
+                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "%Nilav%")
                 };
                 var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer where CustomerName like @CustomerName", parameters);
                 Assert.IsTrue((int)count > 0);
@@ -122,10 +122,10 @@ namespace MyORM.Test
             using (var dbConnection = new SqlDbConnection(connectionString))
             {
                 var customer = dbConnection.ExecuteSingle<Customer>("Select Top 1 * From Customer");
-                var parameters = new List<DbParameter>
+                var parameters = new List<SqlDbParameter>
                 {
-                    new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate"),
-                    new DbParameter("CustomerId ", System.Data.ParameterDirection.Input,customer.CustomerId)
+                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate"),
+                    new SqlDbParameter("CustomerId ", System.Data.ParameterDirection.Input,customer.CustomerId)
                 };
                 dbConnection.ExecuteNonQuery("Update Customer set CustomerName = @CustomerName Where CustomerId = @CustomerId", parameters);
 
@@ -141,9 +141,9 @@ namespace MyORM.Test
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = new SqlDbConnection(connectionString))
             {
-                var parameters = new List<DbParameter>
+                var parameters = new List<SqlDbParameter>
                 {
-                    new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate")
+                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate")
                 };
                 dbConnection.ExecuteNonQuery("Delete From Customer Where CustomerName = @CustomerName", parameters);
 

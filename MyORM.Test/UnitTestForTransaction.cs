@@ -16,10 +16,10 @@ namespace MyORM.Test
             {
                 dbConnection.BeginTransaction();
 
-                var parameters = new List<DbParameter>
+                var parameters = new List<SqlDbParameter>
                 {
-                    new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
-                    new DbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
+                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
                 dbConnection.ExecuteNonQuery("insert into customer(customerName) values(@CustomerName) SET @Identity = SCOPE_IDENTITY()", parameters);
                 
@@ -27,10 +27,10 @@ namespace MyORM.Test
                 if (outParameters != null && outParameters.Count > 0)
                 {
                     var id = outParameters[0].Value;
-                    var updateParameters = new List<DbParameter>
+                    var updateParameters = new List<SqlDbParameter>
                     {
-                        new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate"),
-                        new DbParameter("CustomerId ", System.Data.ParameterDirection.Input,id)
+                        new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate"),
+                        new SqlDbParameter("CustomerId ", System.Data.ParameterDirection.Input,id)
                     };
                     dbConnection.ExecuteNonQuery("Update Customer set CustomerName = @CustomerName Where CustomerId = @CustomerId", updateParameters);
                     var updatedCustomer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", id));
@@ -53,10 +53,10 @@ namespace MyORM.Test
             {
                 dbConnection.BeginTransaction();
 
-                var parameters = new List<DbParameter>
+                var parameters = new List<SqlDbParameter>
                 {
-                    new DbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
-                    new DbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
+                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
                 dbConnection.ExecuteNonQuery("insert into customer(customerName) values(@CustomerName) SET @Identity = SCOPE_IDENTITY()", parameters);
 
