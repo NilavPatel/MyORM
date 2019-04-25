@@ -2,6 +2,7 @@
 using MyORM.Core;
 using MyORM.Test.Models;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace MyORM.Test
@@ -150,6 +151,39 @@ namespace MyORM.Test
                 var customer = dbConnection.ExecuteSingle<Customer>("Select * From Customer where CustomerName = @CustomerName", parameters);
                 Assert.IsNull(customer);
             }
+        }
+
+        [TestMethod]
+        public void GetFirstOrDefaultCustomer_ExecuteSingleWithMapper_ReturnsDataReader()
+        {
+            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
+            {
+                var customer = dbConnection.ExecuteSingle("Select * From Customer", null, MapCustomer);
+
+                Assert.IsNotNull(customer);
+            }
+        }
+
+        [TestMethod]
+        public void GetAllCustomer_ExecuteListWithMapper_ReturnsDataReader()
+        {
+            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
+            {
+                var customers = dbConnection.ExecuteList("Select * From Customer", null, MapCustomer);
+
+                Assert.IsNotNull(customers);
+            }
+        }
+
+        private Customer MapCustomer(IDataReader dataReader)
+        {
+            return new Customer()
+            {
+                CustomerId = dataReader.GetValueOrDefault<long>("CustomerId"),
+                CustomerName = dataReader.GetValueOrDefault<string>("CustomerName")
+            };
         }
     }
 }

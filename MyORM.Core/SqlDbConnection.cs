@@ -34,6 +34,10 @@ namespace MyORM.Core
         /// </summary>
         private List<SqlDbParameter> _outParameters { get; set; }
 
+        public delegate T Mapper<out T>(IDataReader reader);
+
+        public delegate T MapperWithIndex<out T>(IDataReader reader, Int32 index);
+
         /// <summary>
         /// is object disposed ?
         /// </summary>
@@ -318,6 +322,38 @@ namespace MyORM.Core
             return objects;
         }
 
+        public IEnumerable<T> ExecuteListProc<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        {
+            Open();
+
+            using (var reader = (DbDataReader)ExecuteProcedure(text, ExecuteType.ExecuteReader, parameters))
+            {
+                var result = reader.ReadAll(mapper);
+
+                UpdateOutParameters();
+
+                Close();
+
+                return result;
+            }
+        }
+
+        public T ExecuteSingleProc<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        {
+            Open();
+
+            using (var reader = (DbDataReader)ExecuteProcedure(text, ExecuteType.ExecuteReader, parameters))
+            {
+                var result = reader.ReadFirstOrDefault(mapper);
+
+                UpdateOutParameters();
+
+                Close();
+
+                return result;
+            }
+        }
+
         /// <summary>
         /// executes non query stored procedure with parameters (Insert, Update, Delete)
         /// </summary>
@@ -444,6 +480,44 @@ namespace MyORM.Core
             Close();
 
             return objects;
+        }
+
+        /// <summary>
+        /// execute data reader
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public IEnumerable<T> ExecuteList<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        {
+            Open();
+
+            using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
+            {
+                var result = reader.ReadAll(mapper);
+
+                UpdateOutParameters();
+
+                Close();
+
+                return result;
+            }
+        }
+
+        public T ExecuteSingle<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        {
+            Open();
+
+            using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
+            {
+                var result = reader.ReadFirstOrDefault(mapper);
+
+                UpdateOutParameters();
+
+                Close();
+
+                return result;
+            }
         }
 
         /// <summary>
