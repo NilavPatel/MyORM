@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace MyORM.Core
+namespace MyORM.Core.DataAccess
 {
     public static class ConnectionFactory
     {

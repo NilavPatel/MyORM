@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MyORM.Core;
+using MyORM.Core.DataAccess;
 using MyORM.Test.Models;
 using System.Collections.Generic;
 

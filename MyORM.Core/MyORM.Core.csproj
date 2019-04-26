@@ -41,10 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionFactory.cs" />
-    <Compile Include="DataReaderExtensions.cs" />
-    <Compile Include="SqlDbConnection.cs" />
-    <Compile Include="SqlDbParameter.cs" />
+    <Compile Include="DataAccess\ConnectionFactory.cs" />
+    <Compile Include="DataAccess\DataReaderExtensions.cs" />
+    <Compile Include="DataAccess\SqlDbConnection.cs" />
+    <Compile Include="DataAccess\SqlDbParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,4 @@
-﻿using MyORM.Core;
+﻿using MyORM.Core.DataAccess;
 using System.Data;
 
 namespace MyORM.Test.Models

@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.Common;
 
-namespace MyORM.Core
+namespace MyORM.Core.DataAccess
 {
     /// <summary>
     /// SQL generic connection class
@@ -32,7 +32,7 @@ namespace MyORM.Core
         /// <summary>
         /// output parameters
         /// </summary>
-        private List<SqlDbParameter> _outParameters { get; set; }
+        private IList<SqlDbParameter> _outParameters { get; set; }
 
         /// <summary>
         /// is object disposed ?
@@ -95,7 +95,7 @@ namespace MyORM.Core
         /// <param name="executeType"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private object ExecuteProcedure(string procedureName, ExecuteType executeType, List<SqlDbParameter> parameters)
+        private object ExecuteProcedure(string procedureName, ExecuteType executeType, IList<SqlDbParameter> parameters)
         {
             return Execute(procedureName, executeType, parameters, CommandType.StoredProcedure);
         }
@@ -107,7 +107,7 @@ namespace MyORM.Core
         /// <param name="executeType"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private object ExecuteQuery(string text, ExecuteType executeType, List<SqlDbParameter> parameters)
+        private object ExecuteQuery(string text, ExecuteType executeType, IList<SqlDbParameter> parameters)
         {
             return Execute(text, executeType, parameters, CommandType.Text);
         }
@@ -120,7 +120,7 @@ namespace MyORM.Core
         /// <param name="parameters"></param>
         /// <param name="commandType"></param>
         /// <returns></returns>
-        private object Execute(string commandText, ExecuteType executeType, List<SqlDbParameter> parameters, CommandType commandType)
+        private object Execute(string commandText, ExecuteType executeType, IList<SqlDbParameter> parameters, CommandType commandType)
         {
             object returnObject = null;
 
@@ -242,7 +242,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public T ExecuteSingleProc<T>(string procedureName, List<SqlDbParameter> parameters = null) where T : new()
+        public T ExecuteSingleProc<T>(string procedureName, IList<SqlDbParameter> parameters = null) where T : new()
         {
             Open();
 
@@ -278,9 +278,9 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<T> ExecuteListProc<T>(string procedureName, List<SqlDbParameter> parameters = null) where T : new()
+        public IList<T> ExecuteListProc<T>(string procedureName, IList<SqlDbParameter> parameters = null) where T : new()
         {
-            List<T> objects = new List<T>();
+            IList<T> objects = new List<T>();
 
             Open();
 
@@ -306,7 +306,7 @@ namespace MyORM.Core
             }
             else
             {
-                objects = default(List<T>);
+                objects = default(IList<T>);
             }
 
             reader.Close();
@@ -326,13 +326,13 @@ namespace MyORM.Core
         /// <param name="parameters"></param>
         /// <param name="mapper"></param>
         /// <returns></returns>
-        public IEnumerable<T> ExecuteListProc<T>(string procedureName, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        public IList<T> ExecuteListProc<T>(string procedureName, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
             Open();
 
             using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
             {
-                var result = reader.ReadAll(mapper);
+                var result = reader.ToList(mapper);
 
                 UpdateOutParameters();
 
@@ -350,13 +350,13 @@ namespace MyORM.Core
         /// <param name="parameters"></param>
         /// <param name="mapper"></param>
         /// <returns></returns>
-        public T ExecuteSingleProc<T>(string procedureName, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        public T ExecuteSingleProc<T>(string procedureName, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
             Open();
 
             using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
             {
-                var result = reader.ReadFirstOrDefault(mapper);
+                var result = reader.FirstOrDefault(mapper);
 
                 UpdateOutParameters();
 
@@ -372,7 +372,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public int ExecuteNonQueryProc(string procedureName, List<SqlDbParameter> parameters)
+        public int ExecuteNonQueryProc(string procedureName, IList<SqlDbParameter> parameters)
         {
             int returnValue;
 
@@ -392,7 +392,7 @@ namespace MyORM.Core
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalarProc(string procedureName, List<SqlDbParameter> parameters = null)
+        public object ExecuteScalarProc(string procedureName, IList<SqlDbParameter> parameters = null)
         {
             object returnValue;
 
@@ -418,7 +418,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public T ExecuteSingle<T>(string text, List<SqlDbParameter> parameters = null) where T : new()
+        public T ExecuteSingle<T>(string text, IList<SqlDbParameter> parameters = null) where T : new()
         {
             Open();
 
@@ -454,9 +454,9 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<T> ExecuteList<T>(string text, List<SqlDbParameter> parameters = null) where T : new()
+        public IList<T> ExecuteList<T>(string text, IList<SqlDbParameter> parameters = null) where T : new()
         {
-            List<T> objects = new List<T>();
+            IList<T> objects = new List<T>();
 
             Open();
 
@@ -482,7 +482,7 @@ namespace MyORM.Core
             }
             else
             {
-                objects = default(List<T>);
+                objects = default(IList<T>);
             }
 
             reader.Close();
@@ -500,13 +500,13 @@ namespace MyORM.Core
         /// <param name="text"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IEnumerable<T> ExecuteList<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        public IList<T> ExecuteList<T>(string text, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
             Open();
 
             using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
             {
-                var result = reader.ReadAll(mapper);
+                var result = reader.ToList(mapper);
 
                 UpdateOutParameters();
 
@@ -524,13 +524,13 @@ namespace MyORM.Core
         /// <param name="parameters"></param>
         /// <param name="mapper"></param>
         /// <returns></returns>
-        public T ExecuteSingle<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        public T ExecuteSingle<T>(string text, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
             Open();
 
             using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
             {
-                var result = reader.ReadFirstOrDefault(mapper);
+                var result = reader.FirstOrDefault(mapper);
 
                 UpdateOutParameters();
 
@@ -546,7 +546,7 @@ namespace MyORM.Core
         /// <param name="procedureName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public int ExecuteNonQuery(string text, List<SqlDbParameter> parameters)
+        public int ExecuteNonQuery(string text, IList<SqlDbParameter> parameters)
         {
             int returnValue;
 
@@ -566,7 +566,7 @@ namespace MyORM.Core
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalar(string text, List<SqlDbParameter> parameters = null)
+        public object ExecuteScalar(string text, IList<SqlDbParameter> parameters = null)
         {
             object returnValue;
 
@@ -635,6 +635,7 @@ namespace MyORM.Core
             return _connection.ConnectionString;
         }
 
+        //TODO: This method is only for test cases, remove it.
         /// <summary>
         /// get Db connection object
         /// </summary>
@@ -648,7 +649,7 @@ namespace MyORM.Core
         /// get output parameters
         /// </summary>
         /// <returns></returns>
-        public List<SqlDbParameter> GetOutParameters()
+        public IList<SqlDbParameter> GetOutParameters()
         {
             return _outParameters;
         }

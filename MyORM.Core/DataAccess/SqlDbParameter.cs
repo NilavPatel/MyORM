@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace MyORM.Core
+namespace MyORM.Core.DataAccess
 {
     /// <summary>
     /// Db parameter class

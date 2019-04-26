@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace MyORM.Core
+namespace MyORM.Core.DataAccess
 {
     public static class DataReaderExtensions
     {
@@ -24,12 +24,12 @@ namespace MyORM.Core
             return (T)(row.IsDBNull(ordinal) ? default(T) : row.GetValue(ordinal));
         }
 
-        public static IEnumerable<T> ReadAll<T>(this IDataReader reader, Mapper<T> mapper)
+        public static IList<T> ToList<T>(this IDataReader reader, Mapper<T> mapper)
         {
-            return reader.ReadAll((r, i1) => mapper(r));
+            return reader.ToList((r, i1) => mapper(r));
         }
 
-        public static IEnumerable<T> ReadAll<T>(this IDataReader reader, MapperWithIndex<T> mapper)
+        public static IList<T> ToList<T>(this IDataReader reader, MapperWithIndex<T> mapper)
         {
             if (reader == null)
             {
@@ -49,7 +49,7 @@ namespace MyORM.Core
             return set.AsReadOnly();
         }
 
-        public static T ReadFirstOrDefault<T>(this IDataReader reader, Mapper<T> mapper)
+        public static T FirstOrDefault<T>(this IDataReader reader, Mapper<T> mapper)
         {
             if (reader == null)
             {
