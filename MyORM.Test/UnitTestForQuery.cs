@@ -21,10 +21,10 @@ namespace MyORM.Test
                 Assert.IsTrue(sqlConnection.ConnectionString.Length > 0);
 
                 sqlConnection.Open();
-                Assert.AreEqual(sqlConnection.State, System.Data.ConnectionState.Open);
+                Assert.AreEqual(sqlConnection.State, ConnectionState.Open);
 
                 sqlConnection.Close();
-                Assert.AreEqual(sqlConnection.State, System.Data.ConnectionState.Closed);
+                Assert.AreEqual(sqlConnection.State, ConnectionState.Closed);
             }
         }
 
@@ -36,17 +36,18 @@ namespace MyORM.Test
             {
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "Nilav1"),
+                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel"),
                     new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
-                dbConnection.ExecuteNonQuery("insert into customer(customerName) values(@CustomerName) SET @Identity = SCOPE_IDENTITY()", parameters);
+                dbConnection.ExecuteNonQuery("insert into customer(FirstName, LastName) values(@FirstName, @LastName) SET @Identity = SCOPE_IDENTITY()", parameters);
                 var outParameters = dbConnection.GetOutParameters();
                 if (outParameters != null && outParameters.Count > 0)
                 {
                     var id = outParameters[0].Value;
                     var customer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", id));
                     Assert.IsNotNull(customer);
-                    Assert.AreEqual(customer.CustomerName, "NilavPatel");
+                    Assert.AreEqual(customer.FirstName, "Nilav1");
                 }
                 else
                 {
@@ -74,7 +75,7 @@ namespace MyORM.Test
             {
                 var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
                 var sqlConnection = dbConnection.GetSqlConnection();
-                Assert.AreEqual(sqlConnection.State, System.Data.ConnectionState.Closed);
+                Assert.AreEqual(sqlConnection.State, ConnectionState.Closed);
             }
         }
 
@@ -86,9 +87,9 @@ namespace MyORM.Test
             {
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "%Nilav%")
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "%Nilav%")
                 };
-                var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer where CustomerName like @CustomerName", parameters);
+                var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer where FirstName like @FirstName", parameters);
                 Assert.IsTrue((int)count > 0);
             }
 
@@ -125,14 +126,14 @@ namespace MyORM.Test
                 var customer = dbConnection.ExecuteSingle<Customer>("Select Top 1 * From Customer");
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate"),
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "NilavUpdate"),
                     new SqlDbParameter("CustomerId ", System.Data.ParameterDirection.Input,customer.CustomerId)
                 };
-                dbConnection.ExecuteNonQuery("Update Customer set CustomerName = @CustomerName Where CustomerId = @CustomerId", parameters);
+                dbConnection.ExecuteNonQuery("Update Customer set FirstName = @FirstName Where CustomerId = @CustomerId", parameters);
 
                 var updatedCustomer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", customer.CustomerId));
                 Assert.IsNotNull(updatedCustomer);
-                Assert.AreEqual(updatedCustomer.CustomerName, "NilavPatelUpdate");
+                Assert.AreEqual(updatedCustomer.FirstName, "NilavUpdate");
             }
         }
 
@@ -144,11 +145,11 @@ namespace MyORM.Test
             {
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate")
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "NilavUpdate")
                 };
-                dbConnection.ExecuteNonQuery("Delete From Customer Where CustomerName = @CustomerName", parameters);
+                dbConnection.ExecuteNonQuery("Delete From Customer Where FirstName = @FirstName", parameters);
 
-                var customer = dbConnection.ExecuteSingle<Customer>("Select * From Customer where CustomerName = @CustomerName", parameters);
+                var customer = dbConnection.ExecuteSingle<Customer>("Select * From Customer where FirstName = @FirstName", parameters);
                 Assert.IsNull(customer);
             }
         }
@@ -159,7 +160,7 @@ namespace MyORM.Test
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
-                var customer = dbConnection.ExecuteSingle("Select * From Customer", null, MapCustomer);
+                var customer = dbConnection.ExecuteSingle("Select * From Customer", null, CustomerMap.Map);
 
                 Assert.IsNotNull(customer);
             }
@@ -171,19 +172,10 @@ namespace MyORM.Test
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
-                var customers = dbConnection.ExecuteList("Select * From Customer", null, MapCustomer);
+                var customers = dbConnection.ExecuteList("Select * From Customer", null, CustomerMap.Map);
 
                 Assert.IsNotNull(customers);
             }
-        }
-
-        private Customer MapCustomer(IDataReader dataReader)
-        {
-            return new Customer()
-            {
-                CustomerId = dataReader.GetValueOrDefault<long>("CustomerId"),
-                CustomerName = dataReader.GetValueOrDefault<string>("CustomerName")
-            };
-        }
+        }        
     }
 }

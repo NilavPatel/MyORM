@@ -16,7 +16,8 @@ namespace MyORM.Test
             {
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "Nilav1"),
+                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel"),
                     new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
                 dbConnection.ExecuteNonQueryProc("sp_InsertCustomer", parameters);
@@ -26,7 +27,7 @@ namespace MyORM.Test
                     var id = outParameters[0].Value;
                     var customer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", id));
                     Assert.IsNotNull(customer);
-                    Assert.AreEqual(customer.CustomerName, "NilavPatel");
+                    Assert.AreEqual(customer.FirstName, "Nilav1");
                 }
                 else
                 {
@@ -56,6 +57,31 @@ namespace MyORM.Test
             {
                 var count = dbConnection.ExecuteScalarProc("sp_GetCustomerCount");
                 Assert.IsTrue((int)count > 0);
+            }
+        }
+
+        [TestMethod]
+        public void GetFirstOrDefaultCustomer_ExecuteSingleProcWithMapper_ReturnsDataReader()
+        {
+            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
+            {
+                var customer = dbConnection.ExecuteSingleProc("sp_GetAllCustomers", null, CustomerMap.MapProc);
+
+                Assert.IsNotNull(customer);
+                Assert.IsNotNull(customer.CustomerName);
+            }
+        }
+
+        [TestMethod]
+        public void GetAllCustomer_ExecuteListProcWithMapper_ReturnsDataReader()
+        {
+            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
+            {
+                var customers = dbConnection.ExecuteListProc("sp_GetAllCustomers", null, CustomerMap.MapProc);
+
+                Assert.IsNotNull(customers);
             }
         }
     }

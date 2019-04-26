@@ -18,24 +18,25 @@ namespace MyORM.Test
 
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "Nilav"),
+                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel"),
                     new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
-                dbConnection.ExecuteNonQuery("insert into customer(customerName) values(@CustomerName) SET @Identity = SCOPE_IDENTITY()", parameters);
-                
+                dbConnection.ExecuteNonQuery("insert into customer(FirstName, LastName) values(@FirstName, @LastName) SET @Identity = SCOPE_IDENTITY()", parameters);
+
                 var outParameters = dbConnection.GetOutParameters();
                 if (outParameters != null && outParameters.Count > 0)
                 {
                     var id = outParameters[0].Value;
                     var updateParameters = new List<SqlDbParameter>
                     {
-                        new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatelUpdate"),
+                        new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "NilavUpdate"),
                         new SqlDbParameter("CustomerId ", System.Data.ParameterDirection.Input,id)
                     };
-                    dbConnection.ExecuteNonQuery("Update Customer set CustomerName = @CustomerName Where CustomerId = @CustomerId", updateParameters);
+                    dbConnection.ExecuteNonQuery("Update Customer set FirstName = @FirstName Where CustomerId = @CustomerId", updateParameters);
                     var updatedCustomer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", id));
                     Assert.IsNotNull(updatedCustomer);
-                    Assert.AreEqual(updatedCustomer.CustomerName, "NilavPatelUpdate");
+                    Assert.AreEqual(updatedCustomer.FirstName, "NilavUpdate");
                 }
 
                 dbConnection.CommitTransaction();
@@ -55,17 +56,18 @@ namespace MyORM.Test
 
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("CustomerName", System.Data.ParameterDirection.Input, "NilavPatel"),
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "Nilav"),
+                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel"),
                     new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
                 };
-                dbConnection.ExecuteNonQuery("insert into customer(customerName) values(@CustomerName) SET @Identity = SCOPE_IDENTITY()", parameters);
+                dbConnection.ExecuteNonQuery("insert into customer(FirstName, LastName) values(@FirstName, @LastName) SET @Identity = SCOPE_IDENTITY()", parameters);
 
                 dbConnection.RollbackTransaction();
 
                 var outParameters = dbConnection.GetOutParameters();
                 if (outParameters != null && outParameters.Count > 0)
                 {
-                    var id = outParameters[0].Value;                    
+                    var id = outParameters[0].Value;
                     var customer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", id));
                     Assert.IsNull(customer);
                 }

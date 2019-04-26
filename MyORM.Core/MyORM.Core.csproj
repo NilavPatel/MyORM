@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="DataReaderExtensions.cs" />
-    <Compile Include="ReaderUtils.cs" />
     <Compile Include="SqlDbConnection.cs" />
     <Compile Include="SqlDbParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

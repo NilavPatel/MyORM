@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\CustomerMap.cs" />
     <Compile Include="UnitTestForProc.cs" />
     <Compile Include="UnitTestForQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

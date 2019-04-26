@@ -34,10 +34,6 @@ namespace MyORM.Core
         /// </summary>
         private List<SqlDbParameter> _outParameters { get; set; }
 
-        public delegate T Mapper<out T>(IDataReader reader);
-
-        public delegate T MapperWithIndex<out T>(IDataReader reader, Int32 index);
-
         /// <summary>
         /// is object disposed ?
         /// </summary>
@@ -322,11 +318,19 @@ namespace MyORM.Core
             return objects;
         }
 
-        public IEnumerable<T> ExecuteListProc<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        /// <summary>
+        /// execute list procedure with mapper
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="procedureName"></param>
+        /// <param name="parameters"></param>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public IEnumerable<T> ExecuteListProc<T>(string procedureName, List<SqlDbParameter> parameters, Mapper<T> mapper)
         {
             Open();
 
-            using (var reader = (DbDataReader)ExecuteProcedure(text, ExecuteType.ExecuteReader, parameters))
+            using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
             {
                 var result = reader.ReadAll(mapper);
 
@@ -338,11 +342,19 @@ namespace MyORM.Core
             }
         }
 
-        public T ExecuteSingleProc<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
+        /// <summary>
+        /// execute single procedure with mapper
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="text"></param>
+        /// <param name="parameters"></param>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public T ExecuteSingleProc<T>(string procedureName, List<SqlDbParameter> parameters, Mapper<T> mapper)
         {
             Open();
 
-            using (var reader = (DbDataReader)ExecuteProcedure(text, ExecuteType.ExecuteReader, parameters))
+            using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
             {
                 var result = reader.ReadFirstOrDefault(mapper);
 
@@ -483,7 +495,7 @@ namespace MyORM.Core
         }
 
         /// <summary>
-        /// execute data reader
+        /// execute list query with mapper
         /// </summary>
         /// <param name="text"></param>
         /// <param name="parameters"></param>
@@ -504,6 +516,14 @@ namespace MyORM.Core
             }
         }
 
+        /// <summary>
+        /// execute single query with mapper
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="text"></param>
+        /// <param name="parameters"></param>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
         public T ExecuteSingle<T>(string text, List<SqlDbParameter> parameters, Mapper<T> mapper)
         {
             Open();
@@ -659,4 +679,21 @@ namespace MyORM.Core
         ExecuteNonQuery,
         ExecuteScalar
     }
+
+    /// <summary>
+    /// Mapper delegate
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    public delegate T Mapper<out T>(IDataReader reader);
+
+    /// <summary>
+    /// Mapper with Index delegate
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="reader"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public delegate T MapperWithIndex<out T>(IDataReader reader, Int32 index);
 }
