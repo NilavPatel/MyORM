@@ -35,6 +35,12 @@ namespace MyORM.Core.DataAccess
         private IList<SqlDbParameter> _outParameters { get; set; }
 
         /// <summary>
+        /// time out
+        /// default value is 2 minute ( 2 * 60 seconds)
+        /// </summary>
+        private int _commandTimeout { get; set; }
+
+        /// <summary>
         /// is object disposed ?
         /// </summary>
         private bool disposed = false;
@@ -49,10 +55,11 @@ namespace MyORM.Core.DataAccess
         /// <param name="str">connection string</param>
         /// <param name="oldConnection">pass connection if exist</param>
         /// <param name="oldTransaction">pass transaction if exist</param>
-        internal SqlDbConnection(string connectionString)
+        internal SqlDbConnection(string connectionString, int commandTimeout = 120)
         {
             _connection = SqlClientFactory.Instance.CreateConnection();
             _connection.ConnectionString = connectionString;
+            _commandTimeout = commandTimeout;
         }
 
         #endregion
@@ -131,8 +138,7 @@ namespace MyORM.Core.DataAccess
                     _command = _connection.CreateCommand();
                     _command.CommandText = commandText;
                     _command.CommandType = commandType;
-                    // 60 * 2 seconds
-                    _command.CommandTimeout = 120;
+                    _command.CommandTimeout = _commandTimeout;
 
                     if (_transaction != null)
                     {
@@ -559,6 +565,29 @@ namespace MyORM.Core.DataAccess
             Close();
 
             return returnValue;
+        }
+
+        /// <summary>
+        /// execute non query with identity scope
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public T ExecuteNonQueryWithScope<T>(string text, IList<SqlDbParameter> parameters)
+        {
+            int returnValue;
+
+            Open();
+
+            parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, 0));
+            text = text + " SET @Identity = SCOPE_IDENTITY()";
+            returnValue = (int)ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
+
+            UpdateOutParameters();
+
+            Close();
+
+            return (T)_outParameters[0].Value;
         }
 
         /// <summary>

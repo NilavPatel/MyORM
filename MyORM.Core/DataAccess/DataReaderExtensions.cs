@@ -4,6 +4,9 @@ using System.Data;
 
 namespace MyORM.Core.DataAccess
 {
+    /// <summary>
+    /// data reader extensions class
+    /// </summary>
     public static class DataReaderExtensions
     {
         public static T GetValueOrDefault<T>(this IDataRecord row, string fieldName)
@@ -19,16 +22,37 @@ namespace MyORM.Core.DataAccess
             }
         }
 
+        /// <summary>
+        /// get value or default
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="row"></param>
+        /// <param name="ordinal"></param>
+        /// <returns></returns>
         public static T GetValueOrDefault<T>(this IDataRecord row, int ordinal)
         {
             return (T)(row.IsDBNull(ordinal) ? default(T) : row.GetValue(ordinal));
         }
 
+        /// <summary>
+        /// to list mapper
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
         public static IList<T> ToList<T>(this IDataReader reader, Mapper<T> mapper)
         {
             return reader.ToList((r, i1) => mapper(r));
         }
 
+        /// <summary>
+        /// to list mapper with index
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
         public static IList<T> ToList<T>(this IDataReader reader, MapperWithIndex<T> mapper)
         {
             if (reader == null)
@@ -49,6 +73,13 @@ namespace MyORM.Core.DataAccess
             return set.AsReadOnly();
         }
 
+        /// <summary>
+        /// first or default
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
         public static T FirstOrDefault<T>(this IDataReader reader, Mapper<T> mapper)
         {
             if (reader == null)

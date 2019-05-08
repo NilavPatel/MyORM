@@ -33,16 +33,17 @@ _/          _/  _/_/_/_/_/  _/_/_/_/_/  _/          _/  _/
 
 ### Methods for text Query
 ````javascript
-1. dbConnection.ExecuteSingle<T>();
-2. dbConnection.ExecuteList<T>();
+1. dbConnection.ExecuteSingle<T>(); // with/Without Mapper
+2. dbConnection.ExecuteList<T>(); // with/Without Mapper
 3. dbConnection.ExecuteNonQuery();
 4. dbConnection.ExecuteScalar();
+5. dbConnection.ExecuteNonQueryWithScope();
 ````
 
 ### Methods for Stored Procedure
 ````javascript
-1. dbConnection.ExecuteSingleProc<T>();
-2. dbConnection.ExecuteListProc<T>();
+1. dbConnection.ExecuteSingleProc<T>(); // with/Without Mapper
+2. dbConnection.ExecuteListProc<T>(); // with/Without Mapper
 3. dbConnection.ExecuteNonQueryProc();
 4. dbConnection.ExecuteScalarProc();
 ````
@@ -58,5 +59,5 @@ _/          _/  _/_/_/_/_/  _/_/_/_/_/  _/          _/  _/
 ````javascript
 1. dbConnection.GetConnectionString();
 2. dbConnection.GetOutParameters();
-3. dbConnection.Dispose();
+3. dbConnection.Dispose();  // dbConnection object will be automatically disposed as it inherits IDisposable.
 ````

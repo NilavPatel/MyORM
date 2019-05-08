@@ -57,6 +57,24 @@ namespace MyORM.Test
         }
 
         [TestMethod]
+        public void InsertCustomer_ExecuteNoneQueryWithScope_InsertCustomerInDatabase()
+        {
+            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
+            {
+                var parameters = new List<SqlDbParameter>
+                {
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "NilavWithScope"),
+                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel")                    
+                };
+                var id = dbConnection.ExecuteNonQueryWithScope<int>("insert into customer(FirstName, LastName) values(@FirstName, @LastName)", parameters);                
+                var customer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", id));
+                Assert.IsNotNull(customer);
+                Assert.AreEqual(customer.FirstName, "NilavWithScope");
+            }
+        }
+
+        [TestMethod]
         public void GetCustomerCount_ExecuteScalar_ReturnTotalCustomerCount()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
@@ -176,6 +194,22 @@ namespace MyORM.Test
 
                 Assert.IsNotNull(customers);
             }
-        }        
+        }
+
+        [TestMethod]
+        public void GetAllCustomer_ExecuteListWithMapper_ThrowsTimeOutException()
+        {
+            Assert.ThrowsException<SqlException>(() =>
+            {
+                var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+                // create connection with timeout 1 second
+                using (var dbConnection = ConnectionFactory.CreateConnection(connectionString, 1))
+                {
+                    var customers = dbConnection.ExecuteList("WAITFOR DELAY '00:02'; Select * From Customer", null, CustomerMap.Map);
+
+                    Assert.IsNotNull(customers);
+                }
+            });
+        }
     }
 }

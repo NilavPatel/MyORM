@@ -47,7 +47,7 @@ namespace MyORM.Test
         }
 
         [TestMethod]
-        public void SetTransaction_WithRollbackTransaction_SaveData()
+        public void SetTransaction_WithRollbackTransaction_RevertData()
         {
             var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
