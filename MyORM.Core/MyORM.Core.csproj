@@ -44,6 +44,7 @@
     <Compile Include="DataAccess\ConnectionFactory.cs" />
     <Compile Include="DataAccess\DataReaderExtensions.cs" />
     <Compile Include="DataAccess\SqlDbConnection.cs" />
+    <Compile Include="DataAccess\SqlDbConnectionAsync.cs" />
     <Compile Include="DataAccess\SqlDbParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
