@@ -57,9 +57,17 @@ namespace MyORM.Core.DataAccess
         /// <param name="oldTransaction">pass transaction if exist</param>
         internal SqlDbConnection(string connectionString, int commandTimeout = 120)
         {
-            _connection = SqlClientFactory.Instance.CreateConnection();
-            _connection.ConnectionString = connectionString;
-            _commandTimeout = commandTimeout;
+            try
+            {
+                _connection = SqlClientFactory.Instance.CreateConnection();
+                _connection.ConnectionString = connectionString;
+                _commandTimeout = commandTimeout;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
         }
 
         #endregion
@@ -250,31 +258,39 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public T ExecuteSingleProc<T>(string procedureName, IList<SqlDbParameter> parameters = null) where T : new()
         {
-            Open();
-
-            DbDataReader reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
-            T tempObject = new T();
-
-            if (reader.HasRows && reader.Read())
+            try
             {
-                for (int i = 0; i < reader.FieldCount; i++)
+                Open();
+
+                DbDataReader reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
+                T tempObject = new T();
+
+                if (reader.HasRows && reader.Read())
                 {
-                    PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
-                    propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
+                        propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                    }
                 }
+                else
+                {
+                    tempObject = default(T);
+                }
+
+                reader.Close();
+
+                UpdateOutParameters();
+
+                Close();
+
+                return tempObject;
             }
-            else
+            catch (Exception ex)
             {
-                tempObject = default(T);
+                Dispose();
+                throw ex;
             }
-
-            reader.Close();
-
-            UpdateOutParameters();
-
-            Close();
-
-            return tempObject;
         }
 
         /// <summary>
@@ -286,42 +302,50 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public IList<T> ExecuteListProc<T>(string procedureName, IList<SqlDbParameter> parameters = null) where T : new()
         {
-            IList<T> objects = new List<T>();
-
-            Open();
-
-            DbDataReader reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
-
-            if (reader.HasRows)
+            try
             {
-                while (reader.Read())
+                IList<T> objects = new List<T>();
+
+                Open();
+
+                DbDataReader reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters);
+
+                if (reader.HasRows)
                 {
-                    T tempObject = new T();
-
-                    for (int i = 0; i < reader.FieldCount; i++)
+                    while (reader.Read())
                     {
-                        if (reader.GetValue(i) != DBNull.Value)
+                        T tempObject = new T();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
-                            propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                            if (reader.GetValue(i) != DBNull.Value)
+                            {
+                                PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
+                                propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                            }
                         }
+
+                        objects.Add(tempObject);
                     }
-
-                    objects.Add(tempObject);
                 }
+                else
+                {
+                    objects = default(IList<T>);
+                }
+
+                reader.Close();
+
+                UpdateOutParameters();
+
+                Close();
+
+                return objects;
             }
-            else
+            catch (Exception ex)
             {
-                objects = default(IList<T>);
+                Dispose();
+                throw ex;
             }
-
-            reader.Close();
-
-            UpdateOutParameters();
-
-            Close();
-
-            return objects;
         }
 
         /// <summary>
@@ -334,17 +358,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public IList<T> ExecuteListProc<T>(string procedureName, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
-            Open();
-
-            using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
+            try
             {
-                var result = reader.ToList(mapper);
+                Open();
 
-                UpdateOutParameters();
+                using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
+                {
+                    var result = reader.ToList(mapper);
 
-                Close();
+                    UpdateOutParameters();
 
-                return result;
+                    Close();
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
             }
         }
 
@@ -358,17 +390,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public T ExecuteSingleProc<T>(string procedureName, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
-            Open();
-
-            using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
+            try
             {
-                var result = reader.FirstOrDefault(mapper);
+                Open();
 
-                UpdateOutParameters();
+                using (var reader = (DbDataReader)ExecuteProcedure(procedureName, ExecuteType.ExecuteReader, parameters))
+                {
+                    var result = reader.FirstOrDefault(mapper);
 
-                Close();
+                    UpdateOutParameters();
 
-                return result;
+                    Close();
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
             }
         }
 
@@ -380,17 +420,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public int ExecuteNonQueryProc(string procedureName, IList<SqlDbParameter> parameters)
         {
-            int returnValue;
+            try
+            {
+                int returnValue;
 
-            Open();
+                Open();
 
-            returnValue = (int)ExecuteProcedure(procedureName, ExecuteType.ExecuteNonQuery, parameters);
+                returnValue = (int)ExecuteProcedure(procedureName, ExecuteType.ExecuteNonQuery, parameters);
 
-            UpdateOutParameters();
+                UpdateOutParameters();
 
-            Close();
+                Close();
 
-            return returnValue;
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -400,17 +448,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public object ExecuteScalarProc(string procedureName, IList<SqlDbParameter> parameters = null)
         {
-            object returnValue;
+            try
+            {
+                object returnValue;
 
-            Open();
+                Open();
 
-            returnValue = ExecuteProcedure(procedureName, ExecuteType.ExecuteScalar, parameters);
+                returnValue = ExecuteProcedure(procedureName, ExecuteType.ExecuteScalar, parameters);
 
-            UpdateOutParameters();
+                UpdateOutParameters();
 
-            Close();
+                Close();
 
-            return returnValue;
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
         }
 
         #endregion
@@ -426,31 +482,39 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public T ExecuteSingle<T>(string text, IList<SqlDbParameter> parameters = null) where T : new()
         {
-            Open();
-
-            DbDataReader reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
-            T tempObject = new T();
-
-            if (reader.HasRows && reader.Read())
+            try
             {
-                for (int i = 0; i < reader.FieldCount; i++)
+                Open();
+
+                DbDataReader reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
+                T tempObject = new T();
+
+                if (reader.HasRows && reader.Read())
                 {
-                    PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
-                    propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
+                        propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                    }
                 }
+                else
+                {
+                    tempObject = default(T);
+                }
+
+                reader.Close();
+
+                UpdateOutParameters();
+
+                Close();
+
+                return tempObject;
             }
-            else
+            catch (Exception ex)
             {
-                tempObject = default(T);
+                Dispose();
+                throw ex;
             }
-
-            reader.Close();
-
-            UpdateOutParameters();
-
-            Close();
-
-            return tempObject;
         }
 
         /// <summary>
@@ -462,42 +526,50 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public IList<T> ExecuteList<T>(string text, IList<SqlDbParameter> parameters = null) where T : new()
         {
-            IList<T> objects = new List<T>();
-
-            Open();
-
-            DbDataReader reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
-
-            if (reader.HasRows)
+            try
             {
-                while (reader.Read())
+                IList<T> objects = new List<T>();
+
+                Open();
+
+                DbDataReader reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters);
+
+                if (reader.HasRows)
                 {
-                    T tempObject = new T();
-
-                    for (int i = 0; i < reader.FieldCount; i++)
+                    while (reader.Read())
                     {
-                        if (reader.GetValue(i) != DBNull.Value)
+                        T tempObject = new T();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
-                            propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                            if (reader.GetValue(i) != DBNull.Value)
+                            {
+                                PropertyInfo propertyInfo = typeof(T).GetProperty(reader.GetName(i));
+                                propertyInfo.SetValue(tempObject, reader.GetValue(i), null);
+                            }
                         }
+
+                        objects.Add(tempObject);
                     }
-
-                    objects.Add(tempObject);
                 }
+                else
+                {
+                    objects = default(IList<T>);
+                }
+
+                reader.Close();
+
+                UpdateOutParameters();
+
+                Close();
+
+                return objects;
             }
-            else
+            catch (Exception ex)
             {
-                objects = default(IList<T>);
+                Dispose();
+                throw ex;
             }
-
-            reader.Close();
-
-            UpdateOutParameters();
-
-            Close();
-
-            return objects;
         }
 
         /// <summary>
@@ -508,17 +580,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public IList<T> ExecuteList<T>(string text, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
-            Open();
-
-            using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
+            try
             {
-                var result = reader.ToList(mapper);
+                Open();
 
-                UpdateOutParameters();
+                using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
+                {
+                    var result = reader.ToList(mapper);
 
-                Close();
+                    UpdateOutParameters();
 
-                return result;
+                    Close();
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
             }
         }
 
@@ -532,17 +612,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public T ExecuteSingle<T>(string text, IList<SqlDbParameter> parameters, Mapper<T> mapper)
         {
-            Open();
-
-            using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
+            try
             {
-                var result = reader.FirstOrDefault(mapper);
+                Open();
 
-                UpdateOutParameters();
+                using (var reader = (DbDataReader)ExecuteQuery(text, ExecuteType.ExecuteReader, parameters))
+                {
+                    var result = reader.FirstOrDefault(mapper);
 
-                Close();
+                    UpdateOutParameters();
 
-                return result;
+                    Close();
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
             }
         }
 
@@ -554,17 +642,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public int ExecuteNonQuery(string text, IList<SqlDbParameter> parameters)
         {
-            int returnValue;
+            try
+            {
+                int returnValue;
 
-            Open();
+                Open();
 
-            returnValue = (int)ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
+                returnValue = (int)ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
 
-            UpdateOutParameters();
+                UpdateOutParameters();
 
-            Close();
+                Close();
 
-            return returnValue;
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -575,19 +671,27 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public T ExecuteNonQueryWithScope<T>(string text, IList<SqlDbParameter> parameters)
         {
-            int returnValue;
+            try
+            {
+                int returnValue;
 
-            Open();
+                Open();
 
-            parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, 0));
-            text = text + " SET @Identity = SCOPE_IDENTITY()";
-            returnValue = (int)ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
+                parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, 0));
+                text = text + " SET @Identity = SCOPE_IDENTITY()";
+                returnValue = (int)ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
 
-            UpdateOutParameters();
+                UpdateOutParameters();
 
-            Close();
+                Close();
 
-            return (T)_outParameters[0].Value;
+                return (T)_outParameters[0].Value;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -597,17 +701,25 @@ namespace MyORM.Core.DataAccess
         /// <returns></returns>
         public object ExecuteScalar(string text, IList<SqlDbParameter> parameters = null)
         {
-            object returnValue;
+            try
+            {
+                object returnValue;
 
-            Open();
+                Open();
 
-            returnValue = ExecuteQuery(text, ExecuteType.ExecuteScalar, parameters);
+                returnValue = ExecuteQuery(text, ExecuteType.ExecuteScalar, parameters);
 
-            UpdateOutParameters();
+                UpdateOutParameters();
 
-            Close();
+                Close();
 
-            return returnValue;
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
         }
 
         #endregion
@@ -619,10 +731,18 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         public void BeginTransaction()
         {
-            if (_connection != null)
+            try
             {
-                _connection.Open();
-                _transaction = _connection.BeginTransaction();
+                if (_connection != null)
+                {
+                    _connection.Open();
+                    _transaction = _connection.BeginTransaction();
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
             }
         }
 
@@ -631,11 +751,19 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         public void CommitTransaction()
         {
-            if (_connection != null && _transaction != null)
+            try
             {
-                _transaction.Commit();
-                _transaction = null;
-                _connection.Close();
+                if (_connection != null && _transaction != null)
+                {
+                    _transaction.Commit();
+                    _transaction = null;
+                    _connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
             }
         }
 
@@ -644,11 +772,19 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         public void RollbackTransaction()
         {
-            if (_connection != null && _transaction != null)
+            try
             {
-                _transaction.Rollback();
-                _transaction = null;
-                _connection.Close();
+                if (_connection != null && _transaction != null)
+                {
+                    _transaction.Rollback();
+                    _transaction = null;
+                    _connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
             }
         }
 
@@ -691,39 +827,19 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            try
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         #endregion
 
         #endregion
     }
-
-    /// <summary>
-    /// execution type enumerations
-    /// </summary>
-    public enum ExecuteType
-    {
-        ExecuteReader,
-        ExecuteNonQuery,
-        ExecuteScalar
-    }
-
-    /// <summary>
-    /// Mapper delegate
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="reader"></param>
-    /// <returns></returns>
-    public delegate T Mapper<out T>(IDataReader reader);
-
-    /// <summary>
-    /// Mapper with Index delegate
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="reader"></param>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public delegate T MapperWithIndex<out T>(IDataReader reader, Int32 index);
 }

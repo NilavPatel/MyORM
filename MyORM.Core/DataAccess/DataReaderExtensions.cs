@@ -9,6 +9,13 @@ namespace MyORM.Core.DataAccess
     /// </summary>
     public static class DataReaderExtensions
     {
+        /// <summary>
+        /// get value or default by field name
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
         public static T GetValueOrDefault<T>(this IDataRecord row, string fieldName)
         {
             try
