@@ -84,5 +84,17 @@ namespace MyORM.Test
                 Assert.IsNotNull(customers);
             }
         }
+
+        [TestMethod]
+        public void GetLastCustomerId_ExecuteNonQueryProcWithReturn_ReturnsDataReader()
+        {
+            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+            using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
+            {
+                var result = dbConnection.ExecuteNonQueryProcWithReturn<int>("sp_ReturnStaticParameter", null);
+
+                Assert.AreEqual(result, 501);
+            }
+        }
     }
 }

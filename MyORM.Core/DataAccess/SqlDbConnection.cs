@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.Common;
+using System.Linq;
 
 namespace MyORM.Core.DataAccess
 {
@@ -202,7 +203,7 @@ namespace MyORM.Core.DataAccess
                 {
                     if (_command.Parameters[i].Direction == ParameterDirection.Output)
                     {
-                        _outParameters.Add(new SqlDbParameter(_command.Parameters[i].ParameterName,
+                        _outParameters.Add(new SqlDbParameter(_command.Parameters[i].ParameterName.Substring(1),
                                                           ParameterDirection.Output,
                                                           _command.Parameters[i].Value));
                     }
@@ -433,6 +434,40 @@ namespace MyORM.Core.DataAccess
                 Close();
 
                 return returnValue;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// execute non query procedure with return value
+        /// </summary>
+        /// <param name="procedureName"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public T ExecuteNonQueryProcWithReturn<T>(string procedureName, IList<SqlDbParameter> parameters)
+        {
+            try
+            {
+
+                Open();
+
+                if(parameters == null)
+                {
+                    parameters = new List<SqlDbParameter>();
+                }
+                parameters.Add(new SqlDbParameter("ReturnValue", ParameterDirection.ReturnValue, 0));
+
+                ExecuteProcedure(procedureName, ExecuteType.ExecuteNonQuery, parameters);
+
+                UpdateOutParameters();
+
+                Close();
+
+                return (T)_command.Parameters["@ReturnValue"].Value;
             }
             catch (Exception ex)
             {
@@ -673,19 +708,22 @@ namespace MyORM.Core.DataAccess
         {
             try
             {
-                int returnValue;
-
                 Open();
 
-                parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, 0));
+                if (parameters == null)
+                {
+                    parameters = new List<SqlDbParameter>();
+                }
+                parameters.Add(new SqlDbParameter("Identity", ParameterDirection.Output, 0));
+
                 text = text + " SET @Identity = SCOPE_IDENTITY()";
-                returnValue = (int)ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
+                ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
 
                 UpdateOutParameters();
 
                 Close();
 
-                return (T)_outParameters[0].Value;
+                return (T)_command.Parameters["@Identity"].Value;
             }
             catch (Exception ex)
             {
