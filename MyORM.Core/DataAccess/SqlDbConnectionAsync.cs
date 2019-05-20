@@ -192,7 +192,7 @@ namespace MyORM.Core.DataAccess
                 {
                     if (_command.Parameters[i].Direction == ParameterDirection.Output)
                     {
-                        _outParameters.Add(new SqlDbParameter(_command.Parameters[i].ParameterName,
+                        _outParameters.Add(new SqlDbParameter(_command.Parameters[i].ParameterName.Substring(1),
                                                           ParameterDirection.Output,
                                                           _command.Parameters[i].Value));
                     }
@@ -436,7 +436,7 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalarProc(string procedureName, IList<SqlDbParameter> parameters = null)
+        public async Task<object> ExecuteScalarProc(string procedureName, IList<SqlDbParameter> parameters = null)
         {
             try
             {
@@ -444,13 +444,41 @@ namespace MyORM.Core.DataAccess
 
                 Open();
 
-                returnValue = ExecuteProcedure(procedureName, ExecuteType.ExecuteScalar, parameters);
+                returnValue = await ExecuteProcedure(procedureName, ExecuteType.ExecuteScalar, parameters);
 
                 UpdateOutParameters();
 
                 Close();
 
                 return returnValue;
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
+        }
+
+        /// <summary>		        /// <summary>
+        /// execute non query procedure with return value		
+        /// </summary>		
+        /// <param name="procedureName"></param>		
+        /// <param name="parameters"></param>		
+        /// <returns></returns>		
+        public async Task<T> ExecuteNonQueryProcWithReturn<T>(string procedureName, IList<SqlDbParameter> parameters)
+        {
+            try
+            {
+                Open();
+                if (parameters == null)
+                {
+                    parameters = new List<SqlDbParameter>();
+                }
+                parameters.Add(new SqlDbParameter("ReturnValue", ParameterDirection.ReturnValue, 0));
+                await ExecuteProcedure(procedureName, ExecuteType.ExecuteNonQuery, parameters);
+                UpdateOutParameters();
+                Close();
+                return (T)_command.Parameters["@ReturnValue"].Value;
             }
             catch (Exception ex)
             {
@@ -667,7 +695,11 @@ namespace MyORM.Core.DataAccess
 
                 Open();
 
-                parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, 0));
+                if (parameters == null) parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, 0));
+                {
+                    parameters = new List<SqlDbParameter>();
+                }
+                parameters.Add(new SqlDbParameter("Identity", ParameterDirection.Output, 0));
                 text = text + " SET @Identity = SCOPE_IDENTITY()";
                 returnValue = (int)(await ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters));
 
@@ -675,7 +707,7 @@ namespace MyORM.Core.DataAccess
 
                 Close();
 
-                return (T)_outParameters[0].Value;
+                return (T)_command.Parameters["@Identity"].Value;
             }
             catch (Exception ex)
             {
@@ -689,7 +721,7 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public object ExecuteScalar(string text, IList<SqlDbParameter> parameters = null)
+        public async Task<object> ExecuteScalar(string text, IList<SqlDbParameter> parameters = null)
         {
             try
             {
@@ -697,7 +729,7 @@ namespace MyORM.Core.DataAccess
 
                 Open();
 
-                returnValue = ExecuteQuery(text, ExecuteType.ExecuteScalar, parameters);
+                returnValue = await ExecuteQuery(text, ExecuteType.ExecuteScalar, parameters);
 
                 UpdateOutParameters();
 
