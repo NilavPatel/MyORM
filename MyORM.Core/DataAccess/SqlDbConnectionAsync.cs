@@ -474,7 +474,7 @@ namespace MyORM.Core.DataAccess
                 {
                     parameters = new List<SqlDbParameter>();
                 }
-                parameters.Add(new SqlDbParameter("ReturnValue", ParameterDirection.ReturnValue, 0));
+                parameters.Add(new SqlDbParameter("ReturnValue", ParameterDirection.ReturnValue, default(T)));
                 await ExecuteProcedure(procedureName, ExecuteType.ExecuteNonQuery, parameters);
                 UpdateOutParameters();
                 Close();
@@ -695,7 +695,7 @@ namespace MyORM.Core.DataAccess
 
                 Open();
 
-                if (parameters == null) parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, 0));
+                if (parameters == null) parameters.Add(new SqlDbParameter("Identity ", ParameterDirection.Output, default(T)));
                 {
                     parameters = new List<SqlDbParameter>();
                 }

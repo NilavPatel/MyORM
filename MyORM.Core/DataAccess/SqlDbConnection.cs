@@ -459,7 +459,7 @@ namespace MyORM.Core.DataAccess
                 {
                     parameters = new List<SqlDbParameter>();
                 }
-                parameters.Add(new SqlDbParameter("ReturnValue", ParameterDirection.ReturnValue, 0));
+                parameters.Add(new SqlDbParameter("ReturnValue", ParameterDirection.ReturnValue, default(T)));
 
                 ExecuteProcedure(procedureName, ExecuteType.ExecuteNonQuery, parameters);
 
@@ -714,7 +714,7 @@ namespace MyORM.Core.DataAccess
                 {
                     parameters = new List<SqlDbParameter>();
                 }
-                parameters.Add(new SqlDbParameter("Identity", ParameterDirection.Output, 0));
+                parameters.Add(new SqlDbParameter("Identity", ParameterDirection.Output, default(T)));
 
                 text = text + " SET @Identity = SCOPE_IDENTITY()";
                 ExecuteQuery(text, ExecuteType.ExecuteNonQuery, parameters);
