@@ -5,7 +5,7 @@ namespace MyORM.Core.DataAccess
 {
     public class SqlDbHelper
     {
-        public static SqlDateTime GetSqlDateTime(DateTime dt)
+        public static SqlDateTime GetSqlDateTime(DateTime? dt)
         {
             if (dt == null)
             {
@@ -17,7 +17,7 @@ namespace MyORM.Core.DataAccess
             }
             else
             {
-                return dt;
+                return dt.Value;
             }
         }
 
