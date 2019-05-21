@@ -36,9 +36,9 @@ namespace MyORM.Test
             {
                 var parameters = new List<SqlDbParameter>
                 {
-                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "Nilav1"),
-                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel"),
-                    new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, 0)
+                    new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, SqlDbHelper.GetSqlString("Nilav1")),
+                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, SqlDbHelper.GetSqlString("Patel")),
+                    new SqlDbParameter("Identity ", System.Data.ParameterDirection.Output, SqlDbHelper.GetSqlInt32(0))
                 };
                 dbConnection.ExecuteNonQuery("insert into customer(FirstName, LastName) values(@FirstName, @LastName) SET @Identity = SCOPE_IDENTITY()", parameters);
                 var outParameters = dbConnection.GetOutParameters();

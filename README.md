@@ -46,6 +46,7 @@ _/          _/  _/_/_/_/_/  _/_/_/_/_/  _/          _/  _/
 2. dbConnection.ExecuteListProc<T>(); // with/Without Mapper
 3. dbConnection.ExecuteNonQueryProc();
 4. dbConnection.ExecuteScalarProc();
+5. dbConnection.ExecuteNonQueryProcWithReturn<T>() // with return parameter
 ````
 
 ### Methods for transaction
