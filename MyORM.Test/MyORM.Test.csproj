@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DataBase\DbScript.sql" />
+    <Content Include="DataBase\TableToClass.sql" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
