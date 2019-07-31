@@ -3,6 +3,9 @@ using System.Data.SqlTypes;
 
 namespace MyORM.Core.DataAccess
 {
+    /// <summary>
+    /// helper class for sql data types
+    /// </summary>
     public class SqlDbHelper
     {
         public static SqlDateTime GetSqlDateTime(DateTime? dt)
