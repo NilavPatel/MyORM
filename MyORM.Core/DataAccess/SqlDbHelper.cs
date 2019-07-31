@@ -5,6 +5,7 @@ namespace MyORM.Core.DataAccess
 {
     /// <summary>
     /// helper class for sql data types
+    /// convert nullable or values
     /// </summary>
     public class SqlDbHelper
     {
