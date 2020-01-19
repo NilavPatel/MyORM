@@ -1,17 +1,7 @@
 # MyORM
 
-````javascript
-      _/          _/  _/_/_/_/_/  _/          _/  _/          _/
-     _/_/        _/      _/      _/          _/_/  _/        _/ 
-    _/  _/      _/      _/      _/          _/  _/  _/      _/  
-   _/    _/    _/      _/      _/          _/    _/  _/    _/   
-  _/      _/  _/      _/      _/          _/_/_/_/_/  _/  _/    
- _/        _/_/      _/      _/          _/        _/  _/_/     
-_/          _/  _/_/_/_/_/  _/_/_/_/_/  _/          _/  _/       
-````
-
-## Technology: ADO.Net and SQL server
-## Test cases available for all scenarios.
+## Technologies: ADO.Net and SQL server
+## Test cases written for all methods.
 
 ````javascript
 1. Create new database connection object using 
