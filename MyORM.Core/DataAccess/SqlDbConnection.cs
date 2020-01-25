@@ -9,7 +9,7 @@ using System.Linq;
 namespace MyORM.Core.DataAccess
 {
     /// <summary>
-    /// SQL generic connection class
+    /// Sql db connection class
     /// </summary>
     public class SqlDbConnection : IDisposable
     {

@@ -10,10 +10,10 @@ namespace MyORM.Test
     [TestClass]
     public class UnitTestForQuery
     {
+        private string connectionString = "Data Source=DESKTOP-PBIS91N\\SQLEXPRESS;Initial Catalog=Test;Integrated Security=True";
         [TestMethod]
         public void CreateNewDbConnection_WithConnectionString_ReturnsConnection()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var sqlConnection = dbConnection.GetSqlConnection();
@@ -31,7 +31,6 @@ namespace MyORM.Test
         [TestMethod]
         public void InsertCustomer_ExecuteNoneQuery_InsertCustomerInDatabase()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
@@ -59,15 +58,14 @@ namespace MyORM.Test
         [TestMethod]
         public void InsertCustomer_ExecuteNoneQueryWithScope_InsertCustomerInDatabase()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
                 {
                     new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "NilavWithScope"),
-                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel")                    
+                    new SqlDbParameter("LastName", System.Data.ParameterDirection.Input, "Patel")
                 };
-                var id = dbConnection.ExecuteNonQueryWithScope<int>("insert into customer(FirstName, LastName) values(@FirstName, @LastName)", parameters);                
+                var id = dbConnection.ExecuteNonQueryWithScope<int>("insert into customer(FirstName, LastName) values(@FirstName, @LastName)", parameters);
                 var customer = dbConnection.ExecuteSingle<Customer>(string.Format("Select * From Customer where CustomerId = {0}", id));
                 Assert.IsNotNull(customer);
                 Assert.AreEqual(customer.FirstName, "NilavWithScope");
@@ -77,7 +75,6 @@ namespace MyORM.Test
         [TestMethod]
         public void GetCustomerCount_ExecuteScalar_ReturnTotalCustomerCount()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
@@ -88,7 +85,6 @@ namespace MyORM.Test
         [TestMethod]
         public void CheckConnectionIsCloseAfterExecute_ExecuteScalar_ConnectionStateIsClosed()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
@@ -100,7 +96,6 @@ namespace MyORM.Test
         [TestMethod]
         public void GetCustomerCountByName_ExecuteScalarWithParameters_ReturnTotalCustomerCount()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
@@ -116,7 +111,6 @@ namespace MyORM.Test
         [TestMethod]
         public void GetAllCustomer_ExecuteList_ReturnsCustomerList()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customers = dbConnection.ExecuteList<Customer>("Select * From Customer");
@@ -127,7 +121,6 @@ namespace MyORM.Test
         [TestMethod]
         public void GetCustomer_ExecuteSingle_ReturnsSingleCustomer()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customer = dbConnection.ExecuteSingle<Customer>("Select Top 1 * From Customer");
@@ -138,7 +131,6 @@ namespace MyORM.Test
         [TestMethod]
         public void UpdateCustomer_ExecuteNoneQuery_UpdateCustomerInDatabase()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customer = dbConnection.ExecuteSingle<Customer>("Select Top 1 * From Customer");
@@ -158,7 +150,6 @@ namespace MyORM.Test
         [TestMethod]
         public void DeleteCustomer_ExecuteNoneQuery_DeleteCustomerInDatabase()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
@@ -175,7 +166,6 @@ namespace MyORM.Test
         [TestMethod]
         public void GetFirstOrDefaultCustomer_ExecuteSingleWithMapper_ReturnsDataReader()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customer = dbConnection.ExecuteSingle("Select * From Customer", null, CustomerMap.Map);
@@ -187,7 +177,6 @@ namespace MyORM.Test
         [TestMethod]
         public void GetAllCustomer_ExecuteListWithMapper_ReturnsDataReader()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customers = dbConnection.ExecuteList("Select * From Customer", null, CustomerMap.Map);
@@ -201,7 +190,6 @@ namespace MyORM.Test
         {
             Assert.ThrowsException<SqlException>(() =>
             {
-                var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
                 // create connection with timeout 1 second
                 using (var dbConnection = ConnectionFactory.CreateConnection(connectionString, 1))
                 {

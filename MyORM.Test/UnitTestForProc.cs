@@ -8,10 +8,10 @@ namespace MyORM.Test
     [TestClass]
     public class UnitTestForProc
     {
+        private string connectionString = "Data Source=DESKTOP-PBIS91N\\SQLEXPRESS;Initial Catalog=Test;Integrated Security=True";
         [TestMethod]
         public void InsertCustomer_ExecuteProc_InsertNewCustomer()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var parameters = new List<SqlDbParameter>
@@ -39,7 +39,7 @@ namespace MyORM.Test
         [TestMethod]
         public void GetAllCustomer_ExecuteProc_ReturnsAllCustomer()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customers = dbConnection.ExecuteListProc<Customer>("sp_GetAllCustomers");
@@ -51,8 +51,7 @@ namespace MyORM.Test
 
         [TestMethod]
         public void GetCustomerCount_ExecuteScalarProc_ReturnTotalCustomerCount()
-        {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+        {            
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var count = dbConnection.ExecuteScalarProc("sp_GetCustomerCount");
@@ -62,8 +61,7 @@ namespace MyORM.Test
 
         [TestMethod]
         public void GetFirstOrDefaultCustomer_ExecuteSingleProcWithMapper_ReturnsDataReader()
-        {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+        {            
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customer = dbConnection.ExecuteSingleProc("sp_GetAllCustomers", null, CustomerMap.MapProc);
@@ -75,8 +73,7 @@ namespace MyORM.Test
 
         [TestMethod]
         public void GetAllCustomer_ExecuteListProcWithMapper_ReturnsDataReader()
-        {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+        {            
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var customers = dbConnection.ExecuteListProc("sp_GetAllCustomers", null, CustomerMap.MapProc);
@@ -87,8 +84,7 @@ namespace MyORM.Test
 
         [TestMethod]
         public void GetLastCustomerId_ExecuteNonQueryProcWithReturn_ReturnsDataReader()
-        {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
+        {            
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 var result = dbConnection.ExecuteNonQueryProcWithReturn<int>("sp_ReturnStaticParameter", null);
