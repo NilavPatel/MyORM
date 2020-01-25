@@ -8,10 +8,10 @@ namespace MyORM.Test
     [TestClass]
     public class UnitTestForTransaction
     {
+        private string connectionString = "Data Source=DESKTOP-PBIS91N\\SQLEXPRESS;Initial Catalog=Test;Integrated Security=True";
         [TestMethod]
         public void SetTransaction_WithCommitTransaction_SaveData()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 dbConnection.BeginTransaction();
@@ -49,7 +49,6 @@ namespace MyORM.Test
         [TestMethod]
         public void SetTransaction_WithRollbackTransaction_RevertData()
         {
-            var connectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=Test;Integrated Security=True";
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
                 dbConnection.BeginTransaction();

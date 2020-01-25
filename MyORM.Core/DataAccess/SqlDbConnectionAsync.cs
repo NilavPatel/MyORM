@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace MyORM.Core.DataAccess
 {
+    /// <summary>
+    /// Sql db connection class for async
+    /// </summary>
     public class SqlDbConnectionAsync : IDisposable
     {
         #region private variables
