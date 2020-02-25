@@ -77,8 +77,8 @@ namespace MyORM.Test
         {
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
-                var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
-                Assert.IsTrue((int)count > 0);
+                var count = dbConnection.ExecuteScalar<int>("Select Count(CustomerId) From Customer");
+                Assert.IsTrue(count > 0);
             }
         }
 
@@ -87,7 +87,7 @@ namespace MyORM.Test
         {
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
-                var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer");
+                var count = dbConnection.ExecuteScalar<int>("Select Count(CustomerId) From Customer");
                 var sqlConnection = dbConnection.GetSqlConnection();
                 Assert.AreEqual(sqlConnection.State, ConnectionState.Closed);
             }
@@ -102,8 +102,8 @@ namespace MyORM.Test
                 {
                     new SqlDbParameter("FirstName", System.Data.ParameterDirection.Input, "%Nilav%")
                 };
-                var count = dbConnection.ExecuteScalar("Select Count(CustomerId) From Customer where FirstName like @FirstName", parameters);
-                Assert.IsTrue((int)count > 0);
+                var count = dbConnection.ExecuteScalar<int>("Select Count(CustomerId) From Customer where FirstName like @FirstName", parameters);
+                Assert.IsTrue(count > 0);
             }
 
         }

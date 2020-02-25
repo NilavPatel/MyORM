@@ -54,8 +54,8 @@ namespace MyORM.Test
         {            
             using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
             {
-                var count = dbConnection.ExecuteScalarProc("sp_GetCustomerCount");
-                Assert.IsTrue((int)count > 0);
+                var count = dbConnection.ExecuteScalarProc<int>("sp_GetCustomerCount");
+                Assert.IsTrue(count > 0);
             }
         }
 

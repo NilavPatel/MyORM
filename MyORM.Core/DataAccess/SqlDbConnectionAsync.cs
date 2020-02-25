@@ -439,7 +439,7 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public async Task<object> ExecuteScalarProc(string procedureName, IList<SqlDbParameter> parameters = null)
+        public async Task<T> ExecuteScalarProc<T>(string procedureName, IList<SqlDbParameter> parameters = null)
         {
             try
             {
@@ -453,7 +453,7 @@ namespace MyORM.Core.DataAccess
 
                 Close();
 
-                return returnValue;
+                return (T)returnValue;
             }
             catch (Exception ex)
             {
@@ -724,7 +724,7 @@ namespace MyORM.Core.DataAccess
         /// </summary>
         /// <param name="procedureName"></param>
         /// <returns></returns>
-        public async Task<object> ExecuteScalar(string text, IList<SqlDbParameter> parameters = null)
+        public async Task<T> ExecuteScalar<T>(string text, IList<SqlDbParameter> parameters = null)
         {
             try
             {
@@ -738,7 +738,7 @@ namespace MyORM.Core.DataAccess
 
                 Close();
 
-                return returnValue;
+                return (T)returnValue;
             }
             catch (Exception ex)
             {
