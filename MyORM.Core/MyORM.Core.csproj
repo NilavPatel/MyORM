@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyORM.Core</RootNamespace>
     <AssemblyName>MyORM.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,12 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\Mapper.cs" />
     <Compile Include="DataAccess\ConnectionFactory.cs" />
     <Compile Include="DataAccess\DataReaderExtensions.cs" />
+    <Compile Include="DataAccess\MapperWithIndex.cs" />
     <Compile Include="DataAccess\SqlDbConnection.cs" />
     <Compile Include="DataAccess\SqlDbConnectionAsync.cs" />
     <Compile Include="DataAccess\SqlDbHelper.cs" />
     <Compile Include="DataAccess\SqlDbParameter.cs" />
+    <Compile Include="DataAccess\ExecuteType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
