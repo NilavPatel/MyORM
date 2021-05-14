@@ -2,14 +2,14 @@
 ## ADO.Net and SQL server  
   
 1.  Create new database connection object using 
-````javascript
+````csharp
 using (var dbConnection = ConnectionFactory.CreateConnection(connectionString))
 {
     // database operations
 }
 ````
 OR
-````javascript
+````csharp
 using (var dbConnection = ConnectionFactory.CreateConnection())
 {
     // database operations
@@ -19,25 +19,33 @@ using (var dbConnection = ConnectionFactory.CreateConnection())
     Name of the default connectionstring must be "DefaultConnection".
     
 ### Methods for text Query
-- dbConnection.ExecuteSingle<T>(); // with/Without Mapper
-- dbConnection.ExecuteList<T>(); // with/Without Mapper
-- dbConnection.ExecuteNonQuery();
-- dbConnection.ExecuteScalar<T>();
-- dbConnection.ExecuteNonQueryWithScope<T>(); // with return parameter
+```csharp
+dbConnection.ExecuteSingle<T>(); // with/Without Mapper
+dbConnection.ExecuteList<T>(); // with/Without Mapper
+dbConnection.ExecuteNonQuery();
+dbConnection.ExecuteScalar<T>();
+dbConnection.ExecuteNonQueryWithScope<T>(); // with return parameter
+```
   
 ### Methods for Stored Procedure
-- dbConnection.ExecuteSingleProc<T>(); // with/Without Mapper
-- dbConnection.ExecuteListProc<T>(); // with/Without Mapper
-- dbConnection.ExecuteNonQueryProc();
-- dbConnection.ExecuteScalarProc<T>();
-- dbConnection.ExecuteNonQueryProcWithReturn<T>() // with return parameter, Name of the return parameter must be "ReturnValue"
-  
+```csharp
+dbConnection.ExecuteSingleProc<T>(); // with/Without Mapper
+dbConnection.ExecuteListProc<T>(); // with/Without Mapper
+dbConnection.ExecuteNonQueryProc();
+dbConnection.ExecuteScalarProc<T>();
+dbConnection.ExecuteNonQueryProcWithReturn<T>() // with return parameter, Name of the return parameter must be "ReturnValue"
+```
+
 ### Methods for transaction
-- dbConnection.BeginTransaction();
-- dbConnection.CommitTransaction();
-- dbConnection.RollbackTransaction();
-  
+```csharp
+dbConnection.BeginTransaction();
+dbConnection.CommitTransaction();
+dbConnection.RollbackTransaction();
+```
+
 ### Other Methods
-- dbConnection.GetConnectionString();
-- dbConnection.GetOutParameters();
-- dbConnection.Dispose();  // dbConnection object will be automatically disposed as it inherits IDisposable.
+```csharp
+dbConnection.GetConnectionString();
+dbConnection.GetOutParameters();
+dbConnection.Dispose();  // dbConnection object will be automatically disposed as it inherits IDisposable.
+```
